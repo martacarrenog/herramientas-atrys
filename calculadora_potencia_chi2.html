@@ -53,16 +53,16 @@
 </style>
 </head>
 <body>
- 
+
 <h1>Calculadora de potencia estadística post hoc</h1>
 <p class="subtitle">Selección automática: Chi-cuadrado analítico (Cochran cumplido) · Fisher exacto por Monte Carlo (frecuencias esperadas &lt;5)</p>
- 
+
 <div class="card">
   <div class="section-title">Configuración</div>
   <div class="grid grid-3" style="margin-bottom:1rem;">
     <div>
       <label>Nombre de la variable</label>
-      <input type="text" id="varname" value="" placeholder="Nombre de la comorbilidad">
+      <input type="text" id="varname" value="" placeholder="ej. Cerebrovascular disease">
     </div>
     <div>
       <label>Número de grupos</label>
@@ -74,10 +74,19 @@
     </div>
   </div>
   <div class="section-title">Datos por grupo</div>
-  <div style="display:grid;grid-template-columns:140px 1fr 1fr;gap:10px;margin-bottom:6px;">
+  <div style="margin-bottom:0.75rem;display:flex;align-items:center;gap:12px;">
+    <span style="font-size:13px;color:#555;">Modo de entrada:</span>
+    <label style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#1a1a1a;cursor:pointer;">
+      <input type="radio" name="inputmode" value="n_total" checked onchange="toggleMode()"> n evento + N total
+    </label>
+    <label style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#1a1a1a;cursor:pointer;">
+      <input type="radio" name="inputmode" value="n_pct" onchange="toggleMode()"> n evento + %
+    </label>
+  </div>
+  <div id="col-headers" style="display:grid;grid-template-columns:140px 1fr 1fr;gap:10px;margin-bottom:6px;">
     <div style="font-size:12px;color:#888;">Grupo</div>
-    <div style="font-size:12px;color:#888;">N con el evento</div>
-    <div style="font-size:12px;color:#888;">N total del grupo</div>
+    <div style="font-size:12px;color:#888;" id="col2-label">n con el evento</div>
+    <div style="font-size:12px;color:#888;" id="col3-label">N total del grupo</div>
   </div>
   <div id="groups-container"></div>
   <div class="spacer"></div>
@@ -88,16 +97,16 @@
     <span id="loading-msg" class="hidden">Simulando Fisher exacto (10.000 iteraciones)... puede tardar unos segundos</span>
   </div>
 </div>
- 
+
 <div class="card hidden" id="results">
   <div id="method-badge-wrap"></div>
   <div id="fisher-info" class="fisher-info hidden"></div>
- 
+
   <div class="section-title">Tabla de contingencia</div>
   <div style="overflow-x:auto;margin-bottom:1.25rem;">
     <table><thead><tr id="ct-head"></tr></thead><tbody id="ct-body"></tbody></table>
   </div>
- 
+
   <div class="section-title">Estadísticos</div>
   <div class="grid grid-4" style="margin-bottom:1.25rem;">
     <div class="metric">
@@ -121,7 +130,7 @@
       <div class="metric-sub" id="out-wsub">—</div>
     </div>
   </div>
- 
+
   <div class="section-title">Potencia estadística post hoc</div>
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
     <span style="font-size:14px;color:#555;" id="lbl-power">Potencia alcanzada</span>
@@ -137,17 +146,17 @@
     <span style="font-size:11px;color:#aaa;">100%</span>
   </div>
   <p id="mc-note" style="font-size:12px;color:#888;margin-top:6px;"></p>
- 
+
   <div class="spacer"></div>
   <div class="section-title">Interpretación</div>
   <div id="interpretation" class="interp-box" style="margin-bottom:1rem;"></div>
- 
+
   <div class="section-title">Frecuencias esperadas</div>
   <div style="overflow-x:auto;margin-bottom:0.5rem;">
     <table><thead><tr id="exp-head"></tr></thead><tbody id="exp-body"></tbody></table>
   </div>
   <p class="note" id="cochran-note"></p>
- 
+
   <div class="spacer"></div>
   <div class="section-title">N necesaria para potencia 80%</div>
   <div class="grid grid-2">
@@ -163,20 +172,32 @@
     </div>
   </div>
 </div>
- 
+
 <div class="card">
   <p class="note"><strong>Nota metodológica:</strong> Si todas las frecuencias esperadas son ≥5 (condición de Cochran), se usa la aproximación analítica chi-cuadrado no central (Cohen, 1988). Si alguna es &lt;5, se usa simulación Monte Carlo de Fisher exacto (10.000 iteraciones): se simulan tablas bajo las proporciones observadas como hipótesis alternativa y se estima la potencia como la proporción de simulaciones en que Fisher exacto rechaza H₀ (p &lt; α). El IC 95% se calcula por la fórmula de Wilson. La V de Cramér se reporta siempre como medida del tamaño del efecto independientemente del método.</p>
 </div>
- 
+
 <script>
+function getMode() {
+  return document.querySelector('input[name="inputmode"]:checked').value;
+}
+function toggleMode() {
+  const mode = getMode();
+  document.getElementById('col2-label').textContent = 'n con el evento';
+  document.getElementById('col3-label').textContent = mode === 'n_pct' ? 'Porcentaje (%)' : 'N total del grupo';
+  buildGroups();
+}
 function buildGroups() {
   const k = parseInt(document.getElementById('ngroups').value) || 3;
+  const mode = getMode();
   const c = document.getElementById('groups-container');
   c.innerHTML = '';
   for (let i = 0; i < k; i++) {
     const d = document.createElement('div');
     d.style.cssText = 'display:grid;grid-template-columns:140px 1fr 1fr;gap:10px;align-items:end;margin-bottom:10px;';
-    d.innerHTML = `<div style="font-size:13px;font-weight:500;color:#444;padding-top:4px;">Grupo ${i+1}</div><div><input type="number" id="e${i}" min="0" placeholder="ej. 7"></div><div><input type="number" id="n${i}" min="1" placeholder="ej. 304"></div>`;
+    const col3placeholder = mode === 'n_pct' ? 'ej. 11.7' : 'ej. 304';
+    const col3label = mode === 'n_pct' ? 'Porcentaje (%)' : 'N total';
+    d.innerHTML = `<div style="font-size:13px;font-weight:500;color:#444;padding-top:4px;">Grupo ${i+1}</div><div><input type="number" id="e${i}" min="0" placeholder="ej. 36"></div><div><input type="number" id="n${i}" min="0" step="${mode==='n_pct'?'0.01':'1'}" placeholder="${col3placeholder}"></div>`;
     c.appendChild(d);
   }
 }
@@ -184,7 +205,8 @@ function resetExample() {
   document.getElementById('ngroups').value = 3;
   document.getElementById('varname').value = 'Precerebral artery occlusion';
   document.getElementById('alpha').value = 0.05;
-  buildGroups();
+  document.querySelector('input[name="inputmode"][value="n_total"]').checked = true;
+  toggleMode();
   document.getElementById('e0').value = 7; document.getElementById('n0').value = 304;
   document.getElementById('e1').value = 1; document.getElementById('n1').value = 207;
   document.getElementById('e2').value = 0; document.getElementById('n2').value = 277;
@@ -194,7 +216,7 @@ function clearAll() {
   buildGroups();
   document.getElementById('results').classList.add('hidden');
 }
- 
+
 function gamma(n) {
   if (Math.abs(n-0.5)<1e-9) return Math.sqrt(Math.PI);
   if (Math.abs(n-1)<1e-9) return 1;
@@ -227,9 +249,9 @@ function findNForPower(w,df,alpha,target){
   }
   return Math.ceil((lo+hi)/2);
 }
- 
+
 function logFact(n){if(n<=1)return 0;let s=0;for(let i=2;i<=n;i++)s+=Math.log(i);return s;}
- 
+
 function fisherPValue(obs, rowTotals, colTotals, N) {
   const k = obs.length;
   const logRef = colTotals.reduce((s,c)=>s+logFact(c),0)
@@ -257,9 +279,9 @@ function fisherPValue(obs, rowTotals, colTotals, N) {
   enumerate(0,[...colTotals],logBase);
   return Math.min(pTotal,1);
 }
- 
+
 function randBinom(n,p){let s=0;for(let i=0;i<n;i++)if(Math.random()<p)s++;return s;}
- 
+
 function monteCarloFisher(props, totals, alpha, nSim) {
   const k=props.length;
   let rej=0;
@@ -278,17 +300,27 @@ function monteCarloFisher(props, totals, alpha, nSim) {
   const se=Math.sqrt(power*(1-power)/nSim);
   return {power, ci_low:Math.max(0,power-1.96*se), ci_high:Math.min(1,power+1.96*se), nSim};
 }
- 
+
 function calcular() {
   const k=parseInt(document.getElementById('ngroups').value);
   const alpha=parseFloat(document.getElementById('alpha').value);
   const varname=document.getElementById('varname').value||'Variable';
+  const mode=getMode();
   const events=[],totals=[];
   for(let i=0;i<k;i++){
     const e=parseFloat(document.getElementById('e'+i).value);
-    const n=parseFloat(document.getElementById('n'+i).value);
-    if(isNaN(e)||isNaN(n)||n<=0||e<0||e>n){alert('Revisa los valores del grupo '+(i+1)+'.');return;}
-    events.push(e);totals.push(n);
+    const n2=parseFloat(document.getElementById('n'+i).value);
+    if(isNaN(e)||isNaN(n2)||e<0){alert('Revisa los valores del grupo '+(i+1)+'.');return;}
+    let ntotal;
+    if(mode==='n_pct'){
+      if(n2<=0||n2>100){alert('El porcentaje del grupo '+(i+1)+' debe estar entre 0 y 100.');return;}
+      ntotal=Math.round(e/(n2/100));
+      if(!isFinite(ntotal)||ntotal<=0){alert('No se puede calcular N total para el grupo '+(i+1)+': comprueba que el porcentaje y los eventos son coherentes.');return;}
+    } else {
+      ntotal=n2;
+      if(ntotal<=0||e>ntotal){alert('Revisa los valores del grupo '+(i+1)+'. N total debe ser > 0 y ≥ N eventos.');return;}
+    }
+    events.push(e);totals.push(ntotal);
   }
   const N=totals.reduce((a,b)=>a+b,0);
   const totalE=events.reduce((a,b)=>a+b,0);
@@ -314,9 +346,9 @@ function calcular() {
   const w=V;
   const pvalChi2=1-chiCDF(chi2,df);
   const useFisher=cellsBelow5>0;
- 
+
   document.getElementById('results').classList.add('hidden');
- 
+
   if(useFisher){
     document.getElementById('loading-msg').classList.remove('hidden');
     setTimeout(()=>{
@@ -325,22 +357,22 @@ function calcular() {
       const obsTable=events.map((e,i)=>[e,noEvents[i]]);
       const pFisher=fisherPValue(obsTable,totals,colTotals,N);
       document.getElementById('loading-msg').classList.add('hidden');
-      render(k,alpha,varname,events,totals,noEvents,N,totalE,totalNoE,colTotals,df,chi2,V,w,pFisher,expMatrix,cellsBelow5,totalCells,mcResult.power,true,mcResult);
+      render(k,alpha,varname,events,totals,noEvents,N,totalE,totalNoE,colTotals,df,chi2,V,w,pFisher,expMatrix,cellsBelow5,totalCells,mcResult.power,true,mcResult,mode);
     },50);
   } else {
     const chiCrit=findChiCrit(alpha,df);
     const power=1-ncChiCDF(chiCrit,df,w*w*N);
-    render(k,alpha,varname,events,totals,noEvents,N,totalE,totalNoE,colTotals,df,chi2,V,w,pvalChi2,expMatrix,cellsBelow5,totalCells,power,false,null);
+    render(k,alpha,varname,events,totals,noEvents,N,totalE,totalNoE,colTotals,df,chi2,V,w,pvalChi2,expMatrix,cellsBelow5,totalCells,power,false,null,mode);
   }
 }
- 
-function render(k,alpha,varname,events,totals,noEvents,N,totalE,totalNoE,colTotals,df,chi2,V,w,pval,expMatrix,cellsBelow5,totalCells,power,useFisher,mcResult){
+
+function render(k,alpha,varname,events,totals,noEvents,N,totalE,totalNoE,colTotals,df,chi2,V,w,pval,expMatrix,cellsBelow5,totalCells,power,useFisher,mcResult,mode){
   document.getElementById('results').classList.remove('hidden');
- 
+
   document.getElementById('method-badge-wrap').innerHTML = useFisher
     ? '<div class="method-badge method-fisher">Método: Fisher exacto por simulación Monte Carlo (10.000 iteraciones)</div>'
     : '<div class="method-badge method-chi2">Método: Chi-cuadrado analítico (condición de Cochran cumplida)</div>';
- 
+
   const fi=document.getElementById('fisher-info');
   if(useFisher){
     fi.classList.remove('hidden');
@@ -348,17 +380,31 @@ function render(k,alpha,varname,events,totals,noEvents,N,totalE,totalNoE,colTota
   } else {
     fi.classList.add('hidden');
   }
- 
+
   const ctHead=document.getElementById('ct-head');
   const ctBody=document.getElementById('ct-body');
   ctHead.innerHTML='<th>Grupo</th><th>Con evento</th><th>Sin evento</th><th>Total</th><th>% evento</th>';
+  if(useFisher===undefined||useFisher===false||useFisher===true){
+    const modeNote = document.getElementById('mode-note');
+    if(modeNote) modeNote.remove();
+  }
   ctBody.innerHTML='';
   for(let i=0;i<k;i++){
     const pct=(events[i]/totals[i]*100).toFixed(1);
     ctBody.innerHTML+=`<tr><td style="font-weight:500;">Grupo ${i+1}</td><td>${events[i]}</td><td>${noEvents[i]}</td><td>${totals[i]}</td><td>${pct}%</td></tr>`;
   }
   ctBody.innerHTML+=`<tr style="font-weight:500;border-top:1px solid #ddd;"><td>Total</td><td>${totalE}</td><td>${totalNoE}</td><td>${N}</td><td>${(totalE/N*100).toFixed(1)}%</td></tr>`;
- 
+  const existingNote=document.getElementById('mode-note');
+  if(existingNote) existingNote.remove();
+  if(mode==='n_pct'){
+    const noteEl=document.createElement('p');
+    noteEl.id='mode-note';
+    noteEl.className='note';
+    noteEl.style.marginBottom='1rem';
+    noteEl.textContent='Nota: el N total por grupo ha sido estimado a partir del N evento y el porcentaje introducidos (N total = redondeo de N evento / porcentaje). Pequeñas diferencias de redondeo son esperables.';
+    document.getElementById('ct-body').parentElement.parentElement.after(noteEl);
+  }
+
   document.getElementById('lbl-chi2').textContent=useFisher?'χ² (referencia)':'χ² observado';
   document.getElementById('out-chi2').textContent=chi2.toFixed(3);
   document.getElementById('out-df').textContent='df = '+df;
@@ -369,7 +415,7 @@ function render(k,alpha,varname,events,totals,noEvents,N,totalE,totalNoE,colTota
   document.getElementById('out-vinterp').textContent=vI;
   document.getElementById('out-w').textContent=w.toFixed(3);
   document.getElementById('out-wsub').textContent=useFisher?'Basado en proporciones observadas':'= V de Cramér (tabla 2×k)';
- 
+
   const powerPct=(power*100).toFixed(1)+'%';
   document.getElementById('out-power').textContent=powerPct;
   document.getElementById('power-bar').style.width=Math.min(power*100,100).toFixed(1)+'%';
@@ -379,7 +425,7 @@ function render(k,alpha,varname,events,totals,noEvents,N,totalE,totalNoE,colTota
   document.getElementById('mc-note').textContent=useFisher
     ?`IC 95% simulación: ${(mcResult.ci_low*100).toFixed(1)}% – ${(mcResult.ci_high*100).toFixed(1)}% · Iteraciones: ${mcResult.nSim.toLocaleString()}`
     :'';
- 
+
   const nNeeded=findNForPower(w,df,alpha,0.80);
   let barColor,tagClass,tagText,interpClass,interpText;
   if(power>=0.80){
@@ -395,13 +441,13 @@ function render(k,alpha,varname,events,totals,noEvents,N,totalE,totalNoE,colTota
     interpText=`<strong>Potencia insuficiente (${powerPct}).</strong> El estudio NO tenía potencia estadística adecuada para detectar de forma fiable el efecto observado en <em>${varname}</em>. Con eventos escasos y estas N, la probabilidad de detectar la diferencia real era solo del ${powerPct}. El p-valor${pval<0.05?' significativo':''} (p = ${pval<0.001?'<0.001':pval.toFixed(3)}) probablemente refleja inflación estadística más que una diferencia real reproducible. <strong>Este resultado no debe interpretarse como evidencia clínica sólida.</strong> Para potencia del 80% se necesitarían <strong>${nNeeded.toLocaleString()} pacientes en total</strong>, frente a los ${N} disponibles.`;
     if(useFisher) interpText+=` Calculado por simulación Monte Carlo de Fisher exacto (IC 95%: ${(mcResult.ci_low*100).toFixed(1)}%–${(mcResult.ci_high*100).toFixed(1)}%).`;
   }
- 
+
   document.getElementById('power-bar').style.background=barColor;
   document.getElementById('out-power-tag').className='tag '+tagClass;
   document.getElementById('out-power-tag').textContent=tagText;
   document.getElementById('interpretation').className='interp-box '+interpClass;
   document.getElementById('interpretation').innerHTML=interpText;
- 
+
   const expHead=document.getElementById('exp-head');
   const expBody=document.getElementById('exp-body');
   expHead.innerHTML='<th>Grupo</th><th>Esperada con evento</th><th>Esperada sin evento</th>';
@@ -415,13 +461,13 @@ function render(k,alpha,varname,events,totals,noEvents,N,totalE,totalNoE,colTota
   document.getElementById('cochran-note').textContent=cellsBelow5===0
     ?'Condición de Cochran cumplida: todas las frecuencias esperadas ≥ 5. Chi-cuadrado válido.'
     :`${cellsBelow5} celda(s) con frecuencia esperada <5 (${pctB}% del total). Se ha usado automáticamente Fisher exacto por Monte Carlo.`;
- 
+
   document.getElementById('out-nneeded').textContent=nNeeded.toLocaleString();
   document.getElementById('out-nneeded-sub').textContent=`con α=${alpha}, potencia=80%, w=${w.toFixed(3)}`;
   document.getElementById('out-nactual').textContent=N.toLocaleString();
   document.getElementById('results').scrollIntoView({behavior:'smooth'});
 }
- 
+
 buildGroups();
 </script>
 </body>
