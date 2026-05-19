@@ -53,16 +53,16 @@
 </style>
 </head>
 <body>
-
+ 
 <h1>Calculadora de potencia estadística post hoc</h1>
 <p class="subtitle">Selección automática: Chi-cuadrado analítico (Cochran cumplido) · Fisher exacto por Monte Carlo (frecuencias esperadas &lt;5)</p>
-
+ 
 <div class="card">
   <div class="section-title">Configuración</div>
   <div class="grid grid-3" style="margin-bottom:1rem;">
     <div>
       <label>Nombre de la variable</label>
-      <input type="text" id="varname" value="Precerebral artery occlusion">
+      <input type="text" id="varname" value="" placeholder="Nombre de la comorbilidad">
     </div>
     <div>
       <label>Número de grupos</label>
@@ -88,16 +88,16 @@
     <span id="loading-msg" class="hidden">Simulando Fisher exacto (10.000 iteraciones)... puede tardar unos segundos</span>
   </div>
 </div>
-
+ 
 <div class="card hidden" id="results">
   <div id="method-badge-wrap"></div>
   <div id="fisher-info" class="fisher-info hidden"></div>
-
+ 
   <div class="section-title">Tabla de contingencia</div>
   <div style="overflow-x:auto;margin-bottom:1.25rem;">
     <table><thead><tr id="ct-head"></tr></thead><tbody id="ct-body"></tbody></table>
   </div>
-
+ 
   <div class="section-title">Estadísticos</div>
   <div class="grid grid-4" style="margin-bottom:1.25rem;">
     <div class="metric">
@@ -121,7 +121,7 @@
       <div class="metric-sub" id="out-wsub">—</div>
     </div>
   </div>
-
+ 
   <div class="section-title">Potencia estadística post hoc</div>
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
     <span style="font-size:14px;color:#555;" id="lbl-power">Potencia alcanzada</span>
@@ -137,17 +137,17 @@
     <span style="font-size:11px;color:#aaa;">100%</span>
   </div>
   <p id="mc-note" style="font-size:12px;color:#888;margin-top:6px;"></p>
-
+ 
   <div class="spacer"></div>
   <div class="section-title">Interpretación</div>
   <div id="interpretation" class="interp-box" style="margin-bottom:1rem;"></div>
-
+ 
   <div class="section-title">Frecuencias esperadas</div>
   <div style="overflow-x:auto;margin-bottom:0.5rem;">
     <table><thead><tr id="exp-head"></tr></thead><tbody id="exp-body"></tbody></table>
   </div>
   <p class="note" id="cochran-note"></p>
-
+ 
   <div class="spacer"></div>
   <div class="section-title">N necesaria para potencia 80%</div>
   <div class="grid grid-2">
@@ -163,11 +163,11 @@
     </div>
   </div>
 </div>
-
+ 
 <div class="card">
   <p class="note"><strong>Nota metodológica:</strong> Si todas las frecuencias esperadas son ≥5 (condición de Cochran), se usa la aproximación analítica chi-cuadrado no central (Cohen, 1988). Si alguna es &lt;5, se usa simulación Monte Carlo de Fisher exacto (10.000 iteraciones): se simulan tablas bajo las proporciones observadas como hipótesis alternativa y se estima la potencia como la proporción de simulaciones en que Fisher exacto rechaza H₀ (p &lt; α). El IC 95% se calcula por la fórmula de Wilson. La V de Cramér se reporta siempre como medida del tamaño del efecto independientemente del método.</p>
 </div>
-
+ 
 <script>
 function buildGroups() {
   const k = parseInt(document.getElementById('ngroups').value) || 3;
@@ -194,7 +194,7 @@ function clearAll() {
   buildGroups();
   document.getElementById('results').classList.add('hidden');
 }
-
+ 
 function gamma(n) {
   if (Math.abs(n-0.5)<1e-9) return Math.sqrt(Math.PI);
   if (Math.abs(n-1)<1e-9) return 1;
@@ -227,9 +227,9 @@ function findNForPower(w,df,alpha,target){
   }
   return Math.ceil((lo+hi)/2);
 }
-
+ 
 function logFact(n){if(n<=1)return 0;let s=0;for(let i=2;i<=n;i++)s+=Math.log(i);return s;}
-
+ 
 function fisherPValue(obs, rowTotals, colTotals, N) {
   const k = obs.length;
   const logRef = colTotals.reduce((s,c)=>s+logFact(c),0)
@@ -257,9 +257,9 @@ function fisherPValue(obs, rowTotals, colTotals, N) {
   enumerate(0,[...colTotals],logBase);
   return Math.min(pTotal,1);
 }
-
+ 
 function randBinom(n,p){let s=0;for(let i=0;i<n;i++)if(Math.random()<p)s++;return s;}
-
+ 
 function monteCarloFisher(props, totals, alpha, nSim) {
   const k=props.length;
   let rej=0;
@@ -278,7 +278,7 @@ function monteCarloFisher(props, totals, alpha, nSim) {
   const se=Math.sqrt(power*(1-power)/nSim);
   return {power, ci_low:Math.max(0,power-1.96*se), ci_high:Math.min(1,power+1.96*se), nSim};
 }
-
+ 
 function calcular() {
   const k=parseInt(document.getElementById('ngroups').value);
   const alpha=parseFloat(document.getElementById('alpha').value);
@@ -314,9 +314,9 @@ function calcular() {
   const w=V;
   const pvalChi2=1-chiCDF(chi2,df);
   const useFisher=cellsBelow5>0;
-
+ 
   document.getElementById('results').classList.add('hidden');
-
+ 
   if(useFisher){
     document.getElementById('loading-msg').classList.remove('hidden');
     setTimeout(()=>{
@@ -333,14 +333,14 @@ function calcular() {
     render(k,alpha,varname,events,totals,noEvents,N,totalE,totalNoE,colTotals,df,chi2,V,w,pvalChi2,expMatrix,cellsBelow5,totalCells,power,false,null);
   }
 }
-
+ 
 function render(k,alpha,varname,events,totals,noEvents,N,totalE,totalNoE,colTotals,df,chi2,V,w,pval,expMatrix,cellsBelow5,totalCells,power,useFisher,mcResult){
   document.getElementById('results').classList.remove('hidden');
-
+ 
   document.getElementById('method-badge-wrap').innerHTML = useFisher
     ? '<div class="method-badge method-fisher">Método: Fisher exacto por simulación Monte Carlo (10.000 iteraciones)</div>'
     : '<div class="method-badge method-chi2">Método: Chi-cuadrado analítico (condición de Cochran cumplida)</div>';
-
+ 
   const fi=document.getElementById('fisher-info');
   if(useFisher){
     fi.classList.remove('hidden');
@@ -348,7 +348,7 @@ function render(k,alpha,varname,events,totals,noEvents,N,totalE,totalNoE,colTota
   } else {
     fi.classList.add('hidden');
   }
-
+ 
   const ctHead=document.getElementById('ct-head');
   const ctBody=document.getElementById('ct-body');
   ctHead.innerHTML='<th>Grupo</th><th>Con evento</th><th>Sin evento</th><th>Total</th><th>% evento</th>';
@@ -358,7 +358,7 @@ function render(k,alpha,varname,events,totals,noEvents,N,totalE,totalNoE,colTota
     ctBody.innerHTML+=`<tr><td style="font-weight:500;">Grupo ${i+1}</td><td>${events[i]}</td><td>${noEvents[i]}</td><td>${totals[i]}</td><td>${pct}%</td></tr>`;
   }
   ctBody.innerHTML+=`<tr style="font-weight:500;border-top:1px solid #ddd;"><td>Total</td><td>${totalE}</td><td>${totalNoE}</td><td>${N}</td><td>${(totalE/N*100).toFixed(1)}%</td></tr>`;
-
+ 
   document.getElementById('lbl-chi2').textContent=useFisher?'χ² (referencia)':'χ² observado';
   document.getElementById('out-chi2').textContent=chi2.toFixed(3);
   document.getElementById('out-df').textContent='df = '+df;
@@ -369,7 +369,7 @@ function render(k,alpha,varname,events,totals,noEvents,N,totalE,totalNoE,colTota
   document.getElementById('out-vinterp').textContent=vI;
   document.getElementById('out-w').textContent=w.toFixed(3);
   document.getElementById('out-wsub').textContent=useFisher?'Basado en proporciones observadas':'= V de Cramér (tabla 2×k)';
-
+ 
   const powerPct=(power*100).toFixed(1)+'%';
   document.getElementById('out-power').textContent=powerPct;
   document.getElementById('power-bar').style.width=Math.min(power*100,100).toFixed(1)+'%';
@@ -379,7 +379,7 @@ function render(k,alpha,varname,events,totals,noEvents,N,totalE,totalNoE,colTota
   document.getElementById('mc-note').textContent=useFisher
     ?`IC 95% simulación: ${(mcResult.ci_low*100).toFixed(1)}% – ${(mcResult.ci_high*100).toFixed(1)}% · Iteraciones: ${mcResult.nSim.toLocaleString()}`
     :'';
-
+ 
   const nNeeded=findNForPower(w,df,alpha,0.80);
   let barColor,tagClass,tagText,interpClass,interpText;
   if(power>=0.80){
@@ -395,13 +395,13 @@ function render(k,alpha,varname,events,totals,noEvents,N,totalE,totalNoE,colTota
     interpText=`<strong>Potencia insuficiente (${powerPct}).</strong> El estudio NO tenía potencia estadística adecuada para detectar de forma fiable el efecto observado en <em>${varname}</em>. Con eventos escasos y estas N, la probabilidad de detectar la diferencia real era solo del ${powerPct}. El p-valor${pval<0.05?' significativo':''} (p = ${pval<0.001?'<0.001':pval.toFixed(3)}) probablemente refleja inflación estadística más que una diferencia real reproducible. <strong>Este resultado no debe interpretarse como evidencia clínica sólida.</strong> Para potencia del 80% se necesitarían <strong>${nNeeded.toLocaleString()} pacientes en total</strong>, frente a los ${N} disponibles.`;
     if(useFisher) interpText+=` Calculado por simulación Monte Carlo de Fisher exacto (IC 95%: ${(mcResult.ci_low*100).toFixed(1)}%–${(mcResult.ci_high*100).toFixed(1)}%).`;
   }
-
+ 
   document.getElementById('power-bar').style.background=barColor;
   document.getElementById('out-power-tag').className='tag '+tagClass;
   document.getElementById('out-power-tag').textContent=tagText;
   document.getElementById('interpretation').className='interp-box '+interpClass;
   document.getElementById('interpretation').innerHTML=interpText;
-
+ 
   const expHead=document.getElementById('exp-head');
   const expBody=document.getElementById('exp-body');
   expHead.innerHTML='<th>Grupo</th><th>Esperada con evento</th><th>Esperada sin evento</th>';
@@ -415,15 +415,14 @@ function render(k,alpha,varname,events,totals,noEvents,N,totalE,totalNoE,colTota
   document.getElementById('cochran-note').textContent=cellsBelow5===0
     ?'Condición de Cochran cumplida: todas las frecuencias esperadas ≥ 5. Chi-cuadrado válido.'
     :`${cellsBelow5} celda(s) con frecuencia esperada <5 (${pctB}% del total). Se ha usado automáticamente Fisher exacto por Monte Carlo.`;
-
+ 
   document.getElementById('out-nneeded').textContent=nNeeded.toLocaleString();
   document.getElementById('out-nneeded-sub').textContent=`con α=${alpha}, potencia=80%, w=${w.toFixed(3)}`;
   document.getElementById('out-nactual').textContent=N.toLocaleString();
   document.getElementById('results').scrollIntoView({behavior:'smooth'});
 }
-
+ 
 buildGroups();
-resetExample();
 </script>
 </body>
 </html>
