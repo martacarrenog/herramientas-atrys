@@ -3,112 +3,154 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Calculadora de potencia estadística — Chi-cuadrado / Fisher exacto</title>
+<title>Calculadora de potencia — Chi-cuadrado / Fisher exacto</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: system-ui, -apple-system, sans-serif; font-size: 15px; color: #1a1a1a; background: #f5f5f3; padding: 2rem; line-height: 1.6; }
-  h1 { font-size: 20px; font-weight: 500; margin-bottom: 0.25rem; }
-  .subtitle { font-size: 13px; color: #666; margin-bottom: 2rem; }
-  .card { background: #fff; border: 0.5px solid #ddd; border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; }
-  label { font-size: 13px; color: #555; display: block; margin-bottom: 4px; }
-  input[type=number], input[type=text] { width: 100%; padding: 7px 10px; border: 0.5px solid #ccc; border-radius: 8px; font-size: 14px; background: #fff; color: #1a1a1a; }
-  input:focus { outline: none; border-color: #7A00E6; box-shadow: 0 0 0 2px rgba(122,0,230,0.12); }
-  button { padding: 9px 20px; border: 0.5px solid #bbb; border-radius: 8px; background: #fff; font-size: 14px; cursor: pointer; color: #1a1a1a; }
-  button:hover { background: #f0f0f0; }
-  button.primary { background: #7A00E6; color: #fff; border-color: #7A00E6; font-weight: 500; }
-  button.primary:hover { background: #6200c0; }
-  button.small { padding: 5px 12px; font-size: 13px; }
-  .grid { display: grid; gap: 12px; }
-  .grid-2 { grid-template-columns: 1fr 1fr; }
-  .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
-  .grid-4 { grid-template-columns: repeat(4, 1fr); }
-  .metric { background: #f5f5f3; border-radius: 8px; padding: 0.9rem 1rem; }
-  .metric-label { font-size: 12px; color: #666; margin-bottom: 4px; }
-  .metric-value { font-size: 22px; font-weight: 500; color: #1a1a1a; }
-  .metric-sub { font-size: 12px; color: #888; margin-top: 2px; }
-  .bar-wrap { background: #eee; border-radius: 4px; height: 14px; overflow: hidden; margin-top: 8px; }
-  .bar { height: 100%; border-radius: 4px; transition: width 0.4s ease; }
-  .tag { display: inline-block; font-size: 12px; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
-  .tag-green { background: #e8f5e9; color: #2e7d32; }
-  .tag-orange { background: #fff3e0; color: #e65100; }
-  .tag-red { background: #fce4ec; color: #c62828; }
-  .interp-box { border-radius: 8px; padding: 1rem; font-size: 14px; line-height: 1.6; border-left: 3px solid; }
-  .interp-green { background: #f0faf0; border-color: #2e7d32; color: #1b5e20; }
-  .interp-orange { background: #fffbf0; border-color: #e65100; color: #bf360c; }
-  .interp-red { background: #fdf0f0; border-color: #c62828; color: #7f0000; }
-  .method-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 4px 12px; border-radius: 20px; font-weight: 500; margin-bottom: 1rem; border: 1px solid; }
-  .method-chi2 { background: #e8f5e9; color: #2e7d32; border-color: #a5d6a7; }
-  .method-fisher { background: #e3f2fd; color: #0d47a1; border-color: #90caf9; }
-  .fisher-info { background: #e8f4fd; border: 1px solid #90caf9; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: 13px; color: #0d47a1; line-height: 1.5; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th { text-align: left; font-weight: 500; font-size: 12px; color: #666; padding: 6px 8px; border-bottom: 0.5px solid #ddd; }
-  td { padding: 6px 8px; border-bottom: 0.5px solid #f0f0f0; }
-  .note { font-size: 12px; color: #888; line-height: 1.5; }
-  .section-title { font-size: 13px; font-weight: 500; color: #444; margin-bottom: 0.75rem; padding-bottom: 6px; border-bottom: 0.5px solid #eee; }
-  .hidden { display: none; }
-  .flex-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-  .spacer { height: 1rem; }
-  #loading-msg { font-size: 13px; color: #7A00E6; font-style: italic; }
-  @media (max-width: 600px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; } }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, -apple-system, sans-serif; font-size: 15px; color: #1a1a1a; background: #f5f5f3; padding: 2rem; line-height: 1.6; }
+h1 { font-size: 20px; font-weight: 500; margin-bottom: 0.25rem; }
+.subtitle { font-size: 13px; color: #666; margin-bottom: 2rem; }
+.card { background: #fff; border: 0.5px solid #ddd; border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; }
+label { font-size: 13px; color: #555; display: block; margin-bottom: 4px; }
+input[type=number], input[type=text] { width: 100%; padding: 7px 10px; border: 0.5px solid #ccc; border-radius: 8px; font-size: 14px; background: #fff; color: #1a1a1a; }
+input:focus { outline: none; border-color: #7A00E6; box-shadow: 0 0 0 2px rgba(122,0,230,0.12); }
+select { width: 100%; padding: 7px 10px; border: 0.5px solid #ccc; border-radius: 8px; font-size: 14px; background: #fff; color: #1a1a1a; }
+button { padding: 9px 20px; border: 0.5px solid #bbb; border-radius: 8px; background: #fff; font-size: 14px; cursor: pointer; color: #1a1a1a; }
+button:hover { background: #f0f0f0; }
+button.primary { background: #7A00E6; color: #fff; border-color: #7A00E6; font-weight: 500; }
+button.primary:hover { background: #6200c0; }
+button.small { padding: 5px 12px; font-size: 13px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+.metric { background: #f5f5f3; border-radius: 8px; padding: 0.9rem 1rem; }
+.metric-label { font-size: 12px; color: #666; margin-bottom: 4px; }
+.metric-value { font-size: 22px; font-weight: 500; }
+.metric-sub { font-size: 12px; color: #888; margin-top: 2px; }
+.bar-wrap { background: #eee; border-radius: 4px; height: 14px; overflow: hidden; margin-top: 8px; }
+.bar { height: 100%; border-radius: 4px; transition: width 0.4s; }
+.tag { display: inline-block; font-size: 12px; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+.tag-green { background: #e8f5e9; color: #2e7d32; }
+.tag-orange { background: #fff3e0; color: #e65100; }
+.tag-red { background: #fce4ec; color: #c62828; }
+.tag-blue { background: #e3f2fd; color: #0d47a1; }
+.tag-gray { background: #f0f0f0; color: #666; }
+.interp-box { border-radius: 8px; padding: 1rem; font-size: 14px; line-height: 1.6; border-left: 3px solid; margin-bottom: 0.75rem; }
+.interp-green { background: #f0faf0; border-color: #2e7d32; color: #1b5e20; }
+.interp-orange { background: #fffbf0; border-color: #e65100; color: #bf360c; }
+.interp-red { background: #fdf0f0; border-color: #c62828; color: #7f0000; }
+.interp-blue { background: #e8f4fd; border-color: #1565c0; color: #0d47a1; }
+.method-badge { display: inline-flex; font-size: 12px; padding: 4px 12px; border-radius: 20px; font-weight: 500; margin-bottom: 1rem; border: 1px solid; }
+.method-chi2 { background: #e8f5e9; color: #2e7d32; border-color: #a5d6a7; }
+.method-fisher { background: #e3f2fd; color: #0d47a1; border-color: #90caf9; }
+.fisher-info { background: #e8f4fd; border: 1px solid #90caf9; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: 13px; color: #0d47a1; line-height: 1.5; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; font-weight: 500; font-size: 12px; color: #666; padding: 6px 8px; border-bottom: 0.5px solid #ddd; background: #fafaf8; }
+td { padding: 6px 8px; border-bottom: 0.5px solid #f0f0f0; }
+tr:last-child td { border-bottom: none; }
+.note { font-size: 12px; color: #888; line-height: 1.5; }
+.section-title { font-size: 13px; font-weight: 500; color: #444; margin-bottom: 0.75rem; padding-bottom: 6px; border-bottom: 0.5px solid #eee; }
+.hidden { display: none; }
+.flex-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.spacer { height: 1rem; }
+.mode-tab { padding: 6px 14px; border: 0.5px solid #ddd; border-radius: 20px; font-size: 13px; cursor: pointer; background: #fff; color: #666; }
+.mode-tab.active { background: #7A00E6; color: #fff; border-color: #7A00E6; }
+#loading-msg { font-size: 13px; color: #7A00E6; font-style: italic; }
+.data-grid { overflow-x: auto; margin-top: 0.5rem; }
+.data-grid table { min-width: 400px; }
+.group-name-input { font-size: 12px; padding: 4px 6px; font-weight: 500; color: #7A00E6; border-color: #d0b8f7; }
+.cat-name-input { font-size: 12px; padding: 4px 6px; border: none; border-bottom: 0.5px solid #ddd; border-radius: 0; background: transparent; }
+.total-cell { font-size: 13px; color: #888; text-align: center; padding: 4px 8px; }
+.or-sig { color: #2e7d32; font-weight: 500; }
+.or-ns { color: #888; }
+.or-wide { color: #e65100; }
+.or-inf { color: #c62828; font-style: italic; }
+.clinical-badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 10px; margin-left: 6px; }
+.cb-strong { background: #e8f5e9; color: #2e7d32; }
+.cb-moderate { background: #fff3e0; color: #e65100; }
+.cb-weak { background: #fce4ec; color: #c62828; }
+.cb-inconclusive { background: #f0f0f0; color: #666; }
 </style>
 </head>
 <body>
-
+ 
 <h1>Calculadora de potencia estadística post hoc</h1>
-<p class="subtitle">Selección automática: Chi-cuadrado analítico (Cochran cumplido) · Fisher exacto por Monte Carlo (frecuencias esperadas &lt;5)</p>
-
+<p class="subtitle">Chi-cuadrado / Fisher exacto por Monte Carlo · Odds ratios con IC 95% · Interpretación estadística y clínica</p>
+ 
 <div class="card">
   <div class="section-title">Configuración</div>
-  <div class="grid grid-3" style="margin-bottom:1rem;">
+  <div class="grid-3" style="margin-bottom:1rem;">
     <div>
       <label>Nombre de la variable</label>
-      <input type="text" id="varname" value="" placeholder="ej. Cerebrovascular disease">
+      <input type="text" id="varname" placeholder="ej. Estadio GOLD">
     </div>
     <div>
       <label>Número de grupos</label>
-      <input type="number" id="ngroups" value="3" min="2" max="8" onchange="buildGroups()">
+      <input type="number" id="ngroups" value="3" min="2" max="8" onchange="buildDataGrid()">
     </div>
     <div>
-      <label>Nivel de significación (α)</label>
+      <label>Nivel α</label>
       <input type="number" id="alpha" value="0.05" min="0.01" max="0.20" step="0.01">
     </div>
   </div>
-  <div class="section-title">Datos por grupo</div>
-  <div style="margin-bottom:0.75rem;display:flex;align-items:center;gap:12px;">
-    <span style="font-size:13px;color:#555;">Modo de entrada:</span>
-    <label style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#1a1a1a;cursor:pointer;">
-      <input type="radio" name="inputmode" value="n_total" checked onchange="toggleMode()"> n evento + N total
-    </label>
-    <label style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#1a1a1a;cursor:pointer;">
-      <input type="radio" name="inputmode" value="n_pct" onchange="toggleMode()"> n evento + %
-    </label>
+ 
+  <div style="margin-bottom:1rem;">
+    <div style="font-size:13px;color:#555;margin-bottom:8px;">Tipo de variable</div>
+    <div class="flex-row" style="gap:8px;">
+      <button class="mode-tab active" id="tab-bin" onclick="setType('binary')">Binaria (sí/no)</button>
+      <button class="mode-tab" id="tab-cat" onclick="setType('cat')">Categórica (m categorías)</button>
+    </div>
   </div>
-  <div id="col-headers" style="display:grid;grid-template-columns:140px 1fr 1fr;gap:10px;margin-bottom:6px;">
-    <div style="font-size:12px;color:#888;">Grupo</div>
-    <div style="font-size:12px;color:#888;" id="col2-label">n con el evento</div>
-    <div style="font-size:12px;color:#888;" id="col3-label">N total del grupo</div>
+ 
+  <div id="bin-options" style="margin-bottom:0.75rem;">
+    <div class="flex-row">
+      <span style="font-size:13px;color:#555;">Modo:</span>
+      <label style="display:inline-flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;">
+        <input type="radio" name="imode" value="ntotal" checked onchange="buildDataGrid()"> n evento + N total
+      </label>
+      <label style="display:inline-flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;">
+        <input type="radio" name="imode" value="npct" onchange="buildDataGrid()"> n evento + %
+      </label>
+    </div>
   </div>
-  <div id="groups-container"></div>
+ 
+  <div id="cat-options" class="hidden" style="margin-bottom:0.75rem;">
+    <div class="flex-row" style="gap:16px;">
+      <div class="flex-row" style="gap:8px;">
+        <span style="font-size:13px;color:#555;">Número de categorías:</span>
+        <input type="number" id="ncats" value="4" min="2" max="12" style="width:70px;" onchange="buildDataGrid()">
+      </div>
+      <div class="flex-row" style="gap:8px;">
+        <span style="font-size:13px;color:#555;">Grupo de referencia (OR):</span>
+        <select id="ref-group" style="width:140px;"></select>
+      </div>
+    </div>
+  </div>
+ 
+  <div class="section-title" style="margin-top:0.5rem;">Datos</div>
+  <div class="data-grid" id="data-grid"></div>
+ 
   <div class="spacer"></div>
   <div class="flex-row">
-    <button class="primary" onclick="calcular()">Calcular potencia</button>
-    <button class="small" onclick="resetExample()">Cargar ejemplo</button>
+    <button class="primary" onclick="calcular()">Calcular</button>
+    <button class="small" onclick="loadExample()">Cargar ejemplo</button>
     <button class="small" onclick="clearAll()">Limpiar</button>
-    <span id="loading-msg" class="hidden">Simulando Fisher exacto (10.000 iteraciones)... puede tardar unos segundos</span>
+    <span id="loading-msg" class="hidden">Simulando Fisher exacto (10.000 iteraciones)...</span>
   </div>
 </div>
-
+ 
 <div class="card hidden" id="results">
-  <div id="method-badge-wrap"></div>
+  <div id="badge-wrap"></div>
   <div id="fisher-info" class="fisher-info hidden"></div>
-
+ 
   <div class="section-title">Tabla de contingencia</div>
-  <div style="overflow-x:auto;margin-bottom:1.25rem;">
+  <div style="overflow-x:auto;margin-bottom:0.5rem;">
     <table><thead><tr id="ct-head"></tr></thead><tbody id="ct-body"></tbody></table>
   </div>
-
-  <div class="section-title">Estadísticos</div>
-  <div class="grid grid-4" style="margin-bottom:1.25rem;">
+  <p class="note hidden" id="pct-note">Nota: N total estimado a partir de n evento y porcentaje. Pequeñas diferencias de redondeo son esperables.</p>
+ 
+  <div class="spacer"></div>
+  <div class="section-title">Estadísticos globales</div>
+  <div class="grid-4" style="margin-bottom:1.25rem;">
     <div class="metric">
       <div class="metric-label" id="lbl-chi2">χ² observado</div>
       <div class="metric-value" id="out-chi2">—</div>
@@ -122,7 +164,7 @@
     <div class="metric">
       <div class="metric-label">V de Cramér</div>
       <div class="metric-value" id="out-v">—</div>
-      <div class="metric-sub" id="out-vinterp">—</div>
+      <div class="metric-sub" id="out-vi">—</div>
     </div>
     <div class="metric">
       <div class="metric-label">Effect size (w)</div>
@@ -130,36 +172,46 @@
       <div class="metric-sub" id="out-wsub">—</div>
     </div>
   </div>
-
+ 
   <div class="section-title">Potencia estadística post hoc</div>
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-    <span style="font-size:14px;color:#555;" id="lbl-power">Potencia alcanzada</span>
-    <div style="display:flex;align-items:center;gap:10px;">
-      <span id="out-power-tag" class="tag">—</span>
+    <span style="font-size:14px;color:#555;" id="lbl-power">Potencia</span>
+    <div class="flex-row" style="gap:10px;">
+      <span id="tag-power" class="tag">—</span>
       <span style="font-size:26px;font-weight:500;" id="out-power">—</span>
     </div>
   </div>
-  <div class="bar-wrap"><div class="bar" id="power-bar" style="width:0%;"></div></div>
+  <div class="bar-wrap"><div class="bar" id="power-bar" style="width:0%"></div></div>
   <div style="display:flex;justify-content:space-between;margin-top:4px;">
     <span style="font-size:11px;color:#aaa;">0%</span>
-    <span style="font-size:11px;color:#aaa;">Umbral mínimo aceptable: 80%</span>
+    <span style="font-size:11px;color:#aaa;">Umbral mínimo: 80%</span>
     <span style="font-size:11px;color:#aaa;">100%</span>
   </div>
   <p id="mc-note" style="font-size:12px;color:#888;margin-top:6px;"></p>
-
+ 
   <div class="spacer"></div>
-  <div class="section-title">Interpretación</div>
-  <div id="interpretation" class="interp-box" style="margin-bottom:1rem;"></div>
-
+  <div class="section-title">Interpretación estadística</div>
+  <div id="interp-stat" class="interp-box"></div>
+ 
+  <div class="spacer"></div>
+  <div class="section-title" id="or-section-title">Odds ratios con IC 95%</div>
+  <div style="overflow-x:auto;margin-bottom:0.75rem;">
+    <table><thead><tr id="or-head"></tr></thead><tbody id="or-body"></tbody></table>
+  </div>
+  <div class="spacer"></div>
+  <div class="section-title">Interpretación clínica de los OR</div>
+  <div id="interp-clinical"></div>
+ 
+  <div class="spacer"></div>
   <div class="section-title">Frecuencias esperadas</div>
   <div style="overflow-x:auto;margin-bottom:0.5rem;">
     <table><thead><tr id="exp-head"></tr></thead><tbody id="exp-body"></tbody></table>
   </div>
   <p class="note" id="cochran-note"></p>
-
+ 
   <div class="spacer"></div>
   <div class="section-title">N necesaria para potencia 80%</div>
-  <div class="grid grid-2">
+  <div class="grid-2">
     <div class="metric">
       <div class="metric-label">N total necesaria</div>
       <div class="metric-value" id="out-nneeded">—</div>
@@ -172,303 +224,428 @@
     </div>
   </div>
 </div>
-
+ 
 <div class="card">
-  <p class="note"><strong>Nota metodológica:</strong> Si todas las frecuencias esperadas son ≥5 (condición de Cochran), se usa la aproximación analítica chi-cuadrado no central (Cohen, 1988). Si alguna es &lt;5, se usa simulación Monte Carlo de Fisher exacto (10.000 iteraciones): se simulan tablas bajo las proporciones observadas como hipótesis alternativa y se estima la potencia como la proporción de simulaciones en que Fisher exacto rechaza H₀ (p &lt; α). El IC 95% se calcula por la fórmula de Wilson. La V de Cramér se reporta siempre como medida del tamaño del efecto independientemente del método.</p>
+  <p class="note"><strong>Nota metodológica:</strong> Si todas las frecuencias esperadas ≥5 (condición de Cochran), se usa chi-cuadrado no central analítico (Cohen 1988). Si alguna es &lt;5, se usa simulación Monte Carlo de Fisher exacto (10.000 iteraciones). Los OR se calculan por el método de Woolf con corrección de Haldane (suma de 0.5 a cada celda cuando hay ceros). IC 95% del OR: exp(ln(OR) ± 1.96·SE), donde SE=√(1/a+1/b+1/c+1/d). Un IC que cruza 1 indica ausencia de asociación estadísticamente significativa. Un IC muy amplio indica incertidumbre por N insuficiente, independientemente del p-valor.</p>
 </div>
-
+ 
 <script>
-function getMode() {
-  return document.querySelector('input[name="inputmode"]:checked').value;
+let varType = 'binary';
+ 
+function setType(t) {
+  varType = t;
+  document.getElementById('tab-bin').className  = 'mode-tab'+(t==='binary'?' active':'');
+  document.getElementById('tab-cat').className  = 'mode-tab'+(t==='cat'?' active':'');
+  document.getElementById('bin-options').classList.toggle('hidden', t!=='binary');
+  document.getElementById('cat-options').classList.toggle('hidden', t!=='cat');
+  buildDataGrid();
 }
-function toggleMode() {
-  const mode = getMode();
-  document.getElementById('col2-label').textContent = 'n con el evento';
-  document.getElementById('col3-label').textContent = mode === 'n_pct' ? 'Porcentaje (%)' : 'N total del grupo';
-  buildGroups();
-}
-function buildGroups() {
-  const k = parseInt(document.getElementById('ngroups').value) || 3;
-  const mode = getMode();
-  const c = document.getElementById('groups-container');
-  c.innerHTML = '';
-  for (let i = 0; i < k; i++) {
-    const d = document.createElement('div');
-    d.style.cssText = 'display:grid;grid-template-columns:140px 1fr 1fr;gap:10px;align-items:end;margin-bottom:10px;';
-    const col3placeholder = mode === 'n_pct' ? 'ej. 11.7' : 'ej. 304';
-    const col3label = mode === 'n_pct' ? 'Porcentaje (%)' : 'N total';
-    d.innerHTML = `<div style="font-size:13px;font-weight:500;color:#444;padding-top:4px;">Grupo ${i+1}</div><div><input type="number" id="e${i}" min="0" placeholder="ej. 36"></div><div><input type="number" id="n${i}" min="0" step="${mode==='n_pct'?'0.01':'1'}" placeholder="${col3placeholder}"></div>`;
-    c.appendChild(d);
+function getK() { return Math.max(2, parseInt(document.getElementById('ngroups').value)||3); }
+function getM() { return varType==='cat' ? Math.max(2, parseInt(document.getElementById('ncats').value)||4) : 2; }
+function getPctMode() { const el=document.querySelector('input[name="imode"]:checked'); return el?el.value==='npct':false; }
+ 
+function updateRefGroupSelect() {
+  const k=getK();
+  const sel=document.getElementById('ref-group');
+  if(!sel) return;
+  const prev=sel.value;
+  sel.innerHTML='';
+  for(let j=0;j<k;j++) {
+    const gname=document.getElementById('gname'+j);
+    const label=gname&&gname.value?gname.value:'Grupo '+(j+1);
+    const opt=document.createElement('option');
+    opt.value=j; opt.textContent=label;
+    sel.appendChild(opt);
   }
+  if(prev&&prev<k) sel.value=prev;
 }
-function resetExample() {
-  document.getElementById('ngroups').value = 3;
-  document.getElementById('varname').value = 'Precerebral artery occlusion';
-  document.getElementById('alpha').value = 0.05;
-  document.querySelector('input[name="inputmode"][value="n_total"]').checked = true;
-  toggleMode();
-  document.getElementById('e0').value = 7; document.getElementById('n0').value = 304;
-  document.getElementById('e1').value = 1; document.getElementById('n1').value = 207;
-  document.getElementById('e2').value = 0; document.getElementById('n2').value = 277;
+ 
+function buildDataGrid() {
+  const k=getK(), pct=getPctMode();
+  const grid=document.getElementById('data-grid');
+  if(varType==='binary') {
+    const col3=pct?'%':'N total';
+    let html='<table><thead><tr><th style="min-width:130px;">Grupo</th><th>n evento</th><th>'+col3+'</th></tr></thead><tbody>';
+    for(let j=0;j<k;j++) {
+      html+=`<tr>
+        <td><input type="text" id="gname${j}" placeholder="Grupo ${j+1}" class="group-name-input" oninput="updateRefGroupSelect()"></td>
+        <td><input type="number" id="ev${j}" min="0" placeholder="0"></td>
+        <td><input type="number" id="nt${j}" min="0" step="${pct?'0.01':'1'}" placeholder="${pct?'%':'N'}"></td>
+      </tr>`;
+    }
+    html+='</tbody></table>';
+    grid.innerHTML=html;
+  } else {
+    const m=getM();
+    let html='<table><thead><tr><th style="min-width:140px;">Categoría</th>';
+    for(let j=0;j<k;j++) html+=`<th><input type="text" id="gname${j}" placeholder="Grupo ${j+1}" class="group-name-input" style="width:100px;" oninput="updateRefGroupSelect()"></th>`;
+    html+='<th style="color:#aaa;min-width:60px;">Total fila</th></tr></thead><tbody>';
+    for(let i=0;i<m;i++) {
+      html+=`<tr><td><input type="text" id="cname${i}" placeholder="Cat. ${i+1}" class="cat-name-input" style="width:130px;"></td>`;
+      for(let j=0;j<k;j++) html+=`<td><input type="number" id="cell${i}_${j}" min="0" placeholder="0" oninput="updateTotals()"></td>`;
+      html+=`<td class="total-cell" id="rtot${i}">—</td></tr>`;
+    }
+    html+='<tr style="border-top:1px solid #ddd;"><td style="font-size:12px;font-weight:500;color:#444;padding:6px 8px;">Total col.</td>';
+    for(let j=0;j<k;j++) html+=`<td class="total-cell" id="ctot${j}">—</td>`;
+    html+='<td class="total-cell" id="gtot" style="font-weight:500;color:#444;">—</td></tr>';
+    html+='</tbody></table>';
+    grid.innerHTML=html;
+    updateRefGroupSelect();
+  }
+  updateRefGroupSelect();
+}
+ 
+function updateTotals() {
+  const k=getK(), m=getM();
+  let grand=0;
+  for(let i=0;i<m;i++) {
+    let rs=0;
+    for(let j=0;j<k;j++) rs+=parseFloat(document.getElementById('cell'+i+'_'+j).value)||0;
+    const el=document.getElementById('rtot'+i); if(el) el.textContent=rs>0?rs:'—';
+    grand+=rs;
+  }
+  for(let j=0;j<k;j++) {
+    let cs=0;
+    const m2=getM();
+    for(let i=0;i<m2;i++) cs+=parseFloat(document.getElementById('cell'+i+'_'+j).value)||0;
+    const el=document.getElementById('ctot'+j); if(el) el.textContent=cs>0?cs:'—';
+  }
+  const gel=document.getElementById('gtot'); if(gel) gel.textContent=grand>0?grand:'—';
+}
+ 
+function getGroupNames() {
+  const k=getK();
+  return Array.from({length:k},(_,j)=>{const el=document.getElementById('gname'+j);return el&&el.value?el.value:'Grupo '+(j+1);});
+}
+function getCatNames() {
+  if(varType==='binary') return ['Con evento','Sin evento'];
+  const m=getM();
+  return Array.from({length:m},(_,i)=>{const el=document.getElementById('cname'+i);return el&&el.value?el.value:'Cat. '+(i+1);});
+}
+ 
+function loadExample() {
+  document.getElementById('ngroups').value=3;
+  document.getElementById('alpha').value=0.05;
+  if(varType==='binary') {
+    document.getElementById('varname').value='Precerebral artery occlusion';
+    document.querySelector('input[name="imode"][value="ntotal"]').checked=true;
+    buildDataGrid();
+    document.getElementById('gname0').value='Terapia A'; document.getElementById('ev0').value=7;  document.getElementById('nt0').value=304;
+    document.getElementById('gname1').value='Terapia B'; document.getElementById('ev1').value=1;  document.getElementById('nt1').value=207;
+    document.getElementById('gname2').value='Terapia C'; document.getElementById('ev2').value=0;  document.getElementById('nt2').value=277;
+  } else {
+    document.getElementById('varname').value='Estadio GOLD';
+    document.getElementById('ncats').value=4;
+    buildDataGrid();
+    const data=[[45,30,25],[80,60,50],[55,40,45],[20,15,10]];
+    const cats=['GOLD I','GOLD II','GOLD III','GOLD IV'];
+    const groups=['Terapia A','Terapia B','Terapia C'];
+    for(let j=0;j<3;j++){const el=document.getElementById('gname'+j);if(el)el.value=groups[j];}
+    for(let i=0;i<4;i++){
+      const cel=document.getElementById('cname'+i);if(cel)cel.value=cats[i];
+      for(let j=0;j<3;j++){const el=document.getElementById('cell'+i+'_'+j);if(el)el.value=data[i][j];}
+    }
+    updateTotals(); updateRefGroupSelect();
+  }
 }
 function clearAll() {
-  document.getElementById('varname').value = '';
-  buildGroups();
+  document.getElementById('varname').value='';
+  buildDataGrid();
   document.getElementById('results').classList.add('hidden');
 }
-
-function gamma(n) {
-  if (Math.abs(n-0.5)<1e-9) return Math.sqrt(Math.PI);
-  if (Math.abs(n-1)<1e-9) return 1;
-  if (n>=1) return (n-1)*gamma(n-1);
-  return gamma(n+1)/n;
-}
-function lowerIncGamma(a,x) {
-  if (x<=0) return 0;
-  let s=0,t=1/a,j=0;
-  while(Math.abs(t)>1e-12&&j<300){s+=t;j++;t*=x/(a+j);}
-  return Math.exp(-x)*Math.pow(x,a)*s;
-}
+ 
+function gamma(n){if(Math.abs(n-0.5)<1e-9)return Math.sqrt(Math.PI);if(Math.abs(n-1)<1e-9)return 1;if(n>=1)return(n-1)*gamma(n-1);return gamma(n+1)/n;}
+function lowerIncGamma(a,x){if(x<=0)return 0;let s=0,t=1/a,j=0;while(Math.abs(t)>1e-12&&j<300){s+=t;j++;t*=x/(a+j);}return Math.exp(-x)*Math.pow(x,a)*s;}
 function chiCDF(x,df){if(x<=0)return 0;return lowerIncGamma(df/2,x/2)/gamma(df/2);}
-function ncChiCDF(x,df,lam){
-  if(x<=0)return 0;
-  let p=0,w=Math.exp(-lam/2),k=0;
-  while(k<=150){p+=w*chiCDF(x,df+2*k);k++;w*=(lam/2)/k;if(w<1e-12)break;}
-  return p;
-}
-function findChiCrit(alpha,df){
-  let lo=0,hi=100;
-  for(let i=0;i<80;i++){const m=(lo+hi)/2;(1-chiCDF(m,df)>alpha)?lo=m:hi=m;}
-  return(lo+hi)/2;
-}
-function findNForPower(w,df,alpha,target){
-  let lo=df+2,hi=300000;
-  for(let i=0;i<80;i++){
-    const m=Math.round((lo+hi)/2),lam=w*w*m,crit=findChiCrit(alpha,df);
-    (1-ncChiCDF(crit,df,lam))<target?lo=m:hi=m;
-  }
-  return Math.ceil((lo+hi)/2);
-}
-
-function logFact(n){if(n<=1)return 0;let s=0;for(let i=2;i<=n;i++)s+=Math.log(i);return s;}
-
-function fisherPValue(obs, rowTotals, colTotals, N) {
-  const k = obs.length;
-  const logRef = colTotals.reduce((s,c)=>s+logFact(c),0)
-    + rowTotals.reduce((s,r)=>s+logFact(r),0)
-    - logFact(N)
-    - obs.reduce((s,row)=>s+row.reduce((ss,c)=>ss+logFact(c),0),0);
-  const pRef = Math.exp(logRef);
-  let pTotal = 0;
-  const logBase = colTotals.reduce((s,c)=>s+logFact(c),0)+rowTotals.reduce((s,r)=>s+logFact(r),0)-logFact(N);
-  function enumerate(rowIdx, rem, logP) {
-    if(rowIdx===k-1){
-      const e=rem[0], ne=rem[1];
-      if(e<0||ne<0||e+ne!==rowTotals[rowIdx]) return;
-      const lp=logP-logFact(e)-logFact(ne);
-      if(Math.exp(lp)<=pRef+1e-10) pTotal+=Math.exp(lp);
-      return;
-    }
-    const maxE=Math.min(rowTotals[rowIdx],rem[0]);
-    for(let e=0;e<=maxE;e++){
-      const ne=rowTotals[rowIdx]-e;
-      if(ne<0||ne>rem[1]) continue;
-      enumerate(rowIdx+1,[rem[0]-e,rem[1]-ne],logP-logFact(e)-logFact(ne));
-    }
-  }
-  enumerate(0,[...colTotals],logBase);
-  return Math.min(pTotal,1);
-}
-
+function ncChiCDF(x,df,lam){if(x<=0)return 0;let p=0,pw=Math.exp(-lam/2),ki=0;while(ki<=150){p+=pw*chiCDF(x,df+2*ki);ki++;pw*=(lam/2)/ki;if(pw<1e-12)break;}return p;}
+function findChiCrit(alpha,df){let lo=0,hi=200;for(let i=0;i<100;i++){const m=(lo+hi)/2;(1-chiCDF(m,df)>alpha)?lo=m:hi=m;}return(lo+hi)/2;}
+function findNForPower(w,df,alpha,target){if(w<0.001)return 999999;let lo=df+2,hi=500000;for(let i=0;i<100;i++){const mid=Math.round((lo+hi)/2),lam=w*w*mid,crit=findChiCrit(alpha,df);(1-ncChiCDF(crit,df,lam))<target?lo=mid:hi=mid;}return Math.ceil((lo+hi)/2);}
+function chi2Stat(obs,rowT,colT,N){let c=0;for(let i=0;i<obs.length;i++)for(let j=0;j<obs[0].length;j++){const exp=rowT[i]*colT[j]/N;if(exp>0)c+=Math.pow(obs[i][j]-exp,2)/exp;}return c;}
 function randBinom(n,p){let s=0;for(let i=0;i<n;i++)if(Math.random()<p)s++;return s;}
-
-function monteCarloFisher(props, totals, alpha, nSim) {
-  const k=props.length;
-  let rej=0;
+function monteCarloFisher(propMatrix,colTotals,alpha,nSim){
+  const m=propMatrix.length,k=propMatrix[0].length;let rej=0;
   for(let s=0;s<nSim;s++){
-    const ev=props.map((p,i)=>randBinom(totals[i],p));
-    const noEv=ev.map((e,i)=>totals[i]-e);
-    const N=totals.reduce((a,b)=>a+b,0);
-    const totE=ev.reduce((a,b)=>a+b,0);
-    const totNoE=noEv.reduce((a,b)=>a+b,0);
-    if(totE===0||totNoE===0) continue;
-    const obs=ev.map((e,i)=>[e,noEv[i]]);
-    const p=fisherPValue(obs,totals,[totE,totNoE],N);
-    if(p<alpha) rej++;
+    const obs=Array.from({length:m},()=>new Array(k).fill(0));
+    const rT=new Array(m).fill(0),cT=new Array(k).fill(0);let simN=0;
+    for(let j=0;j<k;j++)for(let i=0;i<m;i++){const v=randBinom(colTotals[j],propMatrix[i][j]);obs[i][j]=v;rT[i]+=v;cT[j]+=v;simN+=v;}
+    if(simN===0)continue;
+    const df=(m-1)*(k-1);
+    if(1-chiCDF(chi2Stat(obs,rT,cT,simN),df)<alpha)rej++;
   }
-  const power=rej/nSim;
-  const se=Math.sqrt(power*(1-power)/nSim);
-  return {power, ci_low:Math.max(0,power-1.96*se), ci_high:Math.min(1,power+1.96*se), nSim};
+  const power=rej/nSim,se=Math.sqrt(power*(1-power)/nSim);
+  return{power,ci_low:Math.max(0,power-1.96*se),ci_high:Math.min(1,power+1.96*se),nSim};
 }
-
+ 
+function calcOR(a,b,c,d) {
+  const ah=a+0.5,bh=b+0.5,ch=c+0.5,dh=d+0.5;
+  const or=ah*dh/(bh*ch);
+  const se=Math.sqrt(1/ah+1/bh+1/ch+1/dh);
+  const lo=Math.exp(Math.log(or)-1.96*se);
+  const hi=Math.exp(Math.log(or)+1.96*se);
+  return{or,lo,hi,se,hasZero:(a===0||b===0||c===0||d===0)};
+}
+ 
+function fmtOR(v){if(!isFinite(v))return '∞';return v.toFixed(2);}
+ 
+function clinicalInterpOR(or,lo,hi,varname,groupA,groupB,catLabel) {
+  const crossesOne=(lo<=1&&hi>=1);
+  const veryWide=(hi/lo>20);
+  const orMag=or<1?1/or:or;
+  let strength='', strengthClass='', clinMsg='';
+ 
+  if(crossesOne||!isFinite(or)) {
+    strength='No significativo'; strengthClass='cb-inconclusive';
+    clinMsg=`El IC 95% cruza 1 (${fmtOR(lo)}–${fmtOR(hi)}), por lo que no hay evidencia de asociación entre ${groupA} y ${groupB}${catLabel?' para '+catLabel:''}.`;
+  } else if(veryWide) {
+    strength='Inconcluyente'; strengthClass='cb-inconclusive';
+    clinMsg=`Aunque el OR es ${fmtOR(or)}, el IC 95% es muy amplio (${fmtOR(lo)}–${fmtOR(hi)}), lo que refleja alta incertidumbre por N insuficiente. El resultado no es clínicamente concluyente.`;
+  } else if(orMag<1.5) {
+    strength='Efecto débil'; strengthClass='cb-weak';
+    clinMsg=`OR ${fmtOR(or)} (IC: ${fmtOR(lo)}–${fmtOR(hi)}). Asociación estadísticamente significativa pero de magnitud débil. Relevancia clínica limitada.`;
+  } else if(orMag<3) {
+    strength='Efecto moderado'; strengthClass='cb-moderate';
+    clinMsg=`OR ${fmtOR(or)} (IC: ${fmtOR(lo)}–${fmtOR(hi)}). Asociación moderada con relevancia clínica potencial. Requiere contexto clínico para interpretar.`;
+  } else {
+    strength='Efecto fuerte'; strengthClass='cb-strong';
+    clinMsg=`OR ${fmtOR(or)} (IC: ${fmtOR(lo)}–${fmtOR(hi)}). Asociación fuerte con relevancia clínica importante.`;
+  }
+  return{strength,strengthClass,clinMsg,crossesOne,veryWide};
+}
+ 
 function calcular() {
-  const k=parseInt(document.getElementById('ngroups').value);
-  const alpha=parseFloat(document.getElementById('alpha').value);
+  const k=getK(), alpha=parseFloat(document.getElementById('alpha').value);
   const varname=document.getElementById('varname').value||'Variable';
-  const mode=getMode();
-  const events=[],totals=[];
-  for(let i=0;i<k;i++){
-    const e=parseFloat(document.getElementById('e'+i).value);
-    const n2=parseFloat(document.getElementById('n'+i).value);
-    if(isNaN(e)||isNaN(n2)||e<0){alert('Revisa los valores del grupo '+(i+1)+'.');return;}
-    let ntotal;
-    if(mode==='n_pct'){
-      if(n2<=0||n2>100){alert('El porcentaje del grupo '+(i+1)+' debe estar entre 0 y 100.');return;}
-      ntotal=Math.round(e/(n2/100));
-      if(!isFinite(ntotal)||ntotal<=0){alert('No se puede calcular N total para el grupo '+(i+1)+': comprueba que el porcentaje y los eventos son coherentes.');return;}
-    } else {
-      ntotal=n2;
-      if(ntotal<=0||e>ntotal){alert('Revisa los valores del grupo '+(i+1)+'. N total debe ser > 0 y ≥ N eventos.');return;}
+  const pctMode=getPctMode();
+  const gNames=getGroupNames();
+  let cNames=getCatNames().slice();
+ 
+  const mRaw=getM();
+  const obs=Array.from({length:mRaw},()=>new Array(k).fill(0));
+  const colT=new Array(k).fill(0), rowT=new Array(mRaw).fill(0);
+  let isPct=false;
+  const refIdx=varType==='cat'?(parseInt(document.getElementById('ref-group').value)||0):0;
+ 
+  if(varType==='binary') {
+    isPct=pctMode;
+    for(let j=0;j<k;j++) {
+      const evRaw=document.getElementById('ev'+j).value;
+      const ntRaw=document.getElementById('nt'+j).value;
+      const ev=evRaw===''?0:parseFloat(evRaw);
+      const nt=ntRaw===''?0:parseFloat(ntRaw);
+      if(isNaN(ev)||ev<0){alert('n evento inválido en grupo '+(j+1)+'.');return;}
+      if(isNaN(nt)||nt<=0){alert('Introduce '+(pctMode?'porcentaje':'N total')+' en grupo '+(j+1)+'.');return;}
+      let ntotal;
+      if(pctMode){
+        if(nt<=0||nt>100){alert('Porcentaje inválido en grupo '+(j+1)+'.');return;}
+        ntotal=Math.round(ev/(nt/100));
+        if(!isFinite(ntotal)||ntotal<ev){alert('Porcentaje incompatible con n evento en grupo '+(j+1)+'.');return;}
+      } else {
+        ntotal=nt;
+        if(ntotal<ev){alert('N total debe ser ≥ n evento en grupo '+(j+1)+'.');return;}
+      }
+      obs[0][j]=ev; obs[1][j]=ntotal-ev;
+      colT[j]=ntotal; rowT[0]+=ev; rowT[1]+=(ntotal-ev);
     }
-    events.push(e);totals.push(ntotal);
-  }
-  const N=totals.reduce((a,b)=>a+b,0);
-  const totalE=events.reduce((a,b)=>a+b,0);
-  const noEvents=events.map((e,i)=>totals[i]-e);
-  const totalNoE=noEvents.reduce((a,b)=>a+b,0);
-  const colTotals=[totalE,totalNoE];
-  const df=k-1;
-  let chi2=0;
-  const expMatrix=[];
-  let cellsBelow5=0,totalCells=0;
-  for(let i=0;i<k;i++){
-    const expRow=[];
-    for(let j=0;j<2;j++){
-      const obs=j===0?events[i]:noEvents[i];
-      const exp=totals[i]*colTotals[j]/N;
-      expRow.push(exp);totalCells++;
-      if(exp<5) cellsBelow5++;
-      if(exp>0) chi2+=Math.pow(obs-exp,2)/exp;
+  } else {
+    for(let i=0;i<mRaw;i++) for(let j=0;j<k;j++) {
+      const raw=document.getElementById('cell'+i+'_'+j).value;
+      const v=raw===''||raw===null?0:parseFloat(raw);
+      if(isNaN(v)||v<0){alert('Valor inválido en categoría '+(i+1)+', grupo '+(j+1)+'.');return;}
+      obs[i][j]=v; colT[j]+=v; rowT[i]+=v;
     }
-    expMatrix.push(expRow);
+    const validIdx=rowT.map((r,i)=>r>0?i:-1).filter(i=>i>=0);
+    if(validIdx.length<2){alert('Necesitas al menos 2 categorías con datos.');return;}
+    const obsF=validIdx.map(i=>obs[i].slice());
+    const rowTF=validIdx.map(i=>rowT[i]);
+    const cNamesF=validIdx.map(i=>cNames[i]);
+    obs.length=0; obsF.forEach(r=>obs.push(r));
+    rowT.length=0; rowTF.forEach(r=>rowT.push(r));
+    cNames.length=0; cNamesF.forEach(n=>cNames.push(n));
   }
-  const V=Math.sqrt(chi2/(N*Math.max(Math.min(k-1,1),1)));
+ 
+  const N=colT.reduce((a,b)=>a+b,0);
+  if(N===0){alert('El total de observaciones es 0.');return;}
+  for(let j=0;j<k;j++) if(colT[j]===0){alert('El grupo '+(j+1)+' tiene N=0.');return;}
+ 
+  const mEff=obs.length;
+  const df=(mEff-1)*(k-1);
+  if(df===0){alert('df=0: necesitas al menos 2 categorías y 2 grupos.');return;}
+ 
+  const chi2=chi2Stat(obs,rowT,colT,N);
+  const minDim=Math.min(mEff-1,k-1);
+  const V=Math.sqrt(chi2/(N*minDim));
   const w=V;
   const pvalChi2=1-chiCDF(chi2,df);
+ 
+  const expMatrix=Array.from({length:mEff},(_,i)=>Array.from({length:k},(_,j)=>rowT[i]*colT[j]/N));
+  let cellsBelow5=0;
+  for(let i=0;i<mEff;i++) for(let j=0;j<k;j++) if(expMatrix[i][j]<5) cellsBelow5++;
+  const totalCells=mEff*k;
   const useFisher=cellsBelow5>0;
-
+ 
   document.getElementById('results').classList.add('hidden');
-
-  if(useFisher){
+ 
+  const doRender=(power,mc)=>render(k,mEff,alpha,varname,obs,colT,rowT,N,df,chi2,V,w,pvalChi2,expMatrix,cellsBelow5,totalCells,power,useFisher,mc,isPct,gNames,cNames,refIdx);
+ 
+  if(useFisher) {
     document.getElementById('loading-msg').classList.remove('hidden');
     setTimeout(()=>{
-      const props=events.map((e,i)=>e/totals[i]);
-      const mcResult=monteCarloFisher(props,totals,alpha,10000);
-      const obsTable=events.map((e,i)=>[e,noEvents[i]]);
-      const pFisher=fisherPValue(obsTable,totals,colTotals,N);
+      const propMatrix=Array.from({length:mEff},(_,i)=>Array.from({length:k},(_,j)=>colT[j]>0?obs[i][j]/colT[j]:0));
+      const mc=monteCarloFisher(propMatrix,colT,alpha,10000);
       document.getElementById('loading-msg').classList.add('hidden');
-      render(k,alpha,varname,events,totals,noEvents,N,totalE,totalNoE,colTotals,df,chi2,V,w,pFisher,expMatrix,cellsBelow5,totalCells,mcResult.power,true,mcResult,mode);
+      doRender(mc.power,mc);
     },50);
   } else {
-    const chiCrit=findChiCrit(alpha,df);
-    const power=1-ncChiCDF(chiCrit,df,w*w*N);
-    render(k,alpha,varname,events,totals,noEvents,N,totalE,totalNoE,colTotals,df,chi2,V,w,pvalChi2,expMatrix,cellsBelow5,totalCells,power,false,null,mode);
+    const crit=findChiCrit(alpha,df);
+    doRender(1-ncChiCDF(crit,df,w*w*N),null);
   }
 }
-
-function render(k,alpha,varname,events,totals,noEvents,N,totalE,totalNoE,colTotals,df,chi2,V,w,pval,expMatrix,cellsBelow5,totalCells,power,useFisher,mcResult,mode){
+ 
+function render(k,mEff,alpha,varname,obs,colT,rowT,N,df,chi2,V,w,pval,expMatrix,cellsBelow5,totalCells,power,useFisher,mc,isPct,gNames,cNames,refIdx) {
   document.getElementById('results').classList.remove('hidden');
-
-  document.getElementById('method-badge-wrap').innerHTML = useFisher
-    ? '<div class="method-badge method-fisher">Método: Fisher exacto por simulación Monte Carlo (10.000 iteraciones)</div>'
-    : '<div class="method-badge method-chi2">Método: Chi-cuadrado analítico (condición de Cochran cumplida)</div>';
-
+ 
+  document.getElementById('badge-wrap').innerHTML=useFisher
+    ?'<div class="method-badge method-fisher">Método: Fisher exacto por simulación Monte Carlo (10.000 iteraciones)</div>'
+    :'<div class="method-badge method-chi2">Método: Chi-cuadrado analítico (condición de Cochran cumplida)</div>';
+ 
   const fi=document.getElementById('fisher-info');
-  if(useFisher){
-    fi.classList.remove('hidden');
-    fi.innerHTML=`Frecuencias esperadas &lt;5 detectadas en ${cellsBelow5} celda(s). Se ha calculado la potencia mediante <strong>simulación Monte Carlo de Fisher exacto</strong> en lugar de la aproximación chi-cuadrado, lo que proporciona una estimación más ajustada a la realidad para datos con eventos escasos. El p-valor mostrado es el p-valor exacto de Fisher para los datos observados. IC 95% de la potencia: <strong>${(mcResult.ci_low*100).toFixed(1)}% – ${(mcResult.ci_high*100).toFixed(1)}%</strong>.`;
-  } else {
-    fi.classList.add('hidden');
-  }
-
+  if(useFisher){fi.classList.remove('hidden');fi.innerHTML=`${cellsBelow5} celda(s) con frecuencia esperada &lt;5. Potencia calculada por simulación Monte Carlo. IC 95%: <strong>${(mc.ci_low*100).toFixed(1)}%–${(mc.ci_high*100).toFixed(1)}%</strong>.`;}
+  else fi.classList.add('hidden');
+ 
   const ctHead=document.getElementById('ct-head');
   const ctBody=document.getElementById('ct-body');
-  ctHead.innerHTML='<th>Grupo</th><th>Con evento</th><th>Sin evento</th><th>Total</th><th>% evento</th>';
-  if(useFisher===undefined||useFisher===false||useFisher===true){
-    const modeNote = document.getElementById('mode-note');
-    if(modeNote) modeNote.remove();
-  }
+  ctHead.innerHTML='<th></th>'+gNames.map(g=>`<th>${g}</th>`).join('')+'<th style="color:#aaa;">Total</th>';
   ctBody.innerHTML='';
-  for(let i=0;i<k;i++){
-    const pct=(events[i]/totals[i]*100).toFixed(1);
-    ctBody.innerHTML+=`<tr><td style="font-weight:500;">Grupo ${i+1}</td><td>${events[i]}</td><td>${noEvents[i]}</td><td>${totals[i]}</td><td>${pct}%</td></tr>`;
+  for(let i=0;i<mEff;i++) {
+    let r=`<tr><td style="font-weight:500;">${cNames[i]}</td>`;
+    for(let j=0;j<k;j++){const pct=colT[j]>0?(obs[i][j]/colT[j]*100).toFixed(1):'—';r+=`<td>${obs[i][j]} (${pct}%)</td>`;}
+    r+=`<td style="color:#888;">${rowT[i]}</td></tr>`;
+    ctBody.innerHTML+=r;
   }
-  ctBody.innerHTML+=`<tr style="font-weight:500;border-top:1px solid #ddd;"><td>Total</td><td>${totalE}</td><td>${totalNoE}</td><td>${N}</td><td>${(totalE/N*100).toFixed(1)}%</td></tr>`;
-  const existingNote=document.getElementById('mode-note');
-  if(existingNote) existingNote.remove();
-  if(mode==='n_pct'){
-    const noteEl=document.createElement('p');
-    noteEl.id='mode-note';
-    noteEl.className='note';
-    noteEl.style.marginBottom='1rem';
-    noteEl.textContent='Nota: el N total por grupo ha sido estimado a partir del N evento y el porcentaje introducidos (N total = redondeo de N evento / porcentaje). Pequeñas diferencias de redondeo son esperables.';
-    document.getElementById('ct-body').parentElement.parentElement.after(noteEl);
-  }
-
+  ctBody.innerHTML+=`<tr style="font-weight:500;border-top:1px solid #ddd;"><td>Total</td>${colT.map(c=>`<td>${c}</td>`).join('')}<td>${N}</td></tr>`;
+  isPct?document.getElementById('pct-note').classList.remove('hidden'):document.getElementById('pct-note').classList.add('hidden');
+ 
   document.getElementById('lbl-chi2').textContent=useFisher?'χ² (referencia)':'χ² observado';
   document.getElementById('out-chi2').textContent=chi2.toFixed(3);
-  document.getElementById('out-df').textContent='df = '+df;
+  document.getElementById('out-df').textContent=`df=${df} [(${mEff}−1)×(${k}−1)]`;
   document.getElementById('out-p').textContent=pval<0.001?'<0.001':pval.toFixed(3);
-  document.getElementById('out-psig').textContent=(useFisher?'Fisher exacto · ':'')+(pval<0.05?'Significativo':'No significativo');
+  document.getElementById('out-psig').textContent=(useFisher?'aprox. · ':'')+(pval<0.05?'Significativo':'No significativo');
   document.getElementById('out-v').textContent=V.toFixed(3);
   const vI=V<0.10?'Efecto negligible':V<0.30?'Efecto pequeño':V<0.50?'Efecto moderado':'Efecto grande';
-  document.getElementById('out-vinterp').textContent=vI;
+  document.getElementById('out-vi').textContent=vI;
   document.getElementById('out-w').textContent=w.toFixed(3);
-  document.getElementById('out-wsub').textContent=useFisher?'Basado en proporciones observadas':'= V de Cramér (tabla 2×k)';
-
+  document.getElementById('out-wsub').textContent=`√(χ²/N·min(${mEff-1},${k-1}))`;
+ 
   const powerPct=(power*100).toFixed(1)+'%';
   document.getElementById('out-power').textContent=powerPct;
   document.getElementById('power-bar').style.width=Math.min(power*100,100).toFixed(1)+'%';
-  document.getElementById('lbl-power').textContent=useFisher
-    ?'Potencia estimada por simulación Monte Carlo (Fisher exacto)'
-    :'Potencia estimada por aproximación analítica (chi-cuadrado no central)';
-  document.getElementById('mc-note').textContent=useFisher
-    ?`IC 95% simulación: ${(mcResult.ci_low*100).toFixed(1)}% – ${(mcResult.ci_high*100).toFixed(1)}% · Iteraciones: ${mcResult.nSim.toLocaleString()}`
-    :'';
-
+  document.getElementById('lbl-power').textContent=useFisher?'Potencia estimada por Monte Carlo':'Potencia estimada por chi-cuadrado no central';
+  document.getElementById('mc-note').textContent=useFisher?`IC 95%: ${(mc.ci_low*100).toFixed(1)}%–${(mc.ci_high*100).toFixed(1)}% · ${mc.nSim.toLocaleString()} iteraciones`:'';
+ 
   const nNeeded=findNForPower(w,df,alpha,0.80);
-  let barColor,tagClass,tagText,interpClass,interpText;
+  let barColor,tagClass,tagText,interpStatText;
   if(power>=0.80){
-    barColor='#2e7d32';tagClass='tag-green';tagText='Adecuada';interpClass='interp-green';
-    interpText=`<strong>Potencia adecuada (${powerPct}).</strong> El estudio tenía suficiente potencia estadística para detectar un efecto del tamaño observado (V de Cramér = ${V.toFixed(3)}, ${vI.toLowerCase()}). El resultado es fiable y tiene alta probabilidad de replicarse en muestras similares. La diferencia observada en <em>${varname}</em> puede considerarse un hallazgo robusto.`;
-    if(useFisher) interpText+=` Calculado por simulación Monte Carlo de Fisher exacto (IC 95%: ${(mcResult.ci_low*100).toFixed(1)}%–${(mcResult.ci_high*100).toFixed(1)}%).`;
+    barColor='#2e7d32';tagClass='tag-green';tagText='Adecuada';
+    interpStatText=`<strong>Potencia adecuada (${powerPct}).</strong> El estudio tenía suficiente potencia para detectar el efecto observado (V de Cramér=${V.toFixed(3)}, ${vI.toLowerCase()}, df=${df}). El resultado es estadísticamente fiable y reproducible en muestras similares.`;
   } else if(power>=0.50){
-    barColor='#e65100';tagClass='tag-orange';tagText='Moderada';interpClass='interp-orange';
-    interpText=`<strong>Potencia moderada (${powerPct}).</strong> El estudio tenía potencia limitada para detectar el efecto observado (V de Cramér = ${V.toFixed(3)}, ${vI.toLowerCase()}). Aunque el resultado es estadísticamente significativo (p ${pval<0.05?'< 0.05':'≥ 0.05'}), existe riesgo de inflación del efecto. El resultado para <em>${varname}</em> debe interpretarse con cautela. Se necesitarían <strong>${nNeeded.toLocaleString()} pacientes en total</strong> para alcanzar potencia del 80%.`;
-    if(useFisher) interpText+=` Calculado por simulación Monte Carlo de Fisher exacto (IC 95%: ${(mcResult.ci_low*100).toFixed(1)}%–${(mcResult.ci_high*100).toFixed(1)}%).`;
+    barColor='#e65100';tagClass='tag-orange';tagText='Moderada';
+    interpStatText=`<strong>Potencia moderada (${powerPct}).</strong> Potencia limitada para detectar el efecto (V de Cramér=${V.toFixed(3)}, ${vI.toLowerCase()}). Riesgo de inflación del efecto. Se necesitarían <strong>${nNeeded.toLocaleString()} pacientes</strong> para potencia del 80% (actuales: ${N}).`;
   } else {
-    barColor='#c62828';tagClass='tag-red';tagText='Baja/Muy baja';interpClass='interp-red';
-    interpText=`<strong>Potencia insuficiente (${powerPct}).</strong> El estudio NO tenía potencia estadística adecuada para detectar de forma fiable el efecto observado en <em>${varname}</em>. Con eventos escasos y estas N, la probabilidad de detectar la diferencia real era solo del ${powerPct}. El p-valor${pval<0.05?' significativo':''} (p = ${pval<0.001?'<0.001':pval.toFixed(3)}) probablemente refleja inflación estadística más que una diferencia real reproducible. <strong>Este resultado no debe interpretarse como evidencia clínica sólida.</strong> Para potencia del 80% se necesitarían <strong>${nNeeded.toLocaleString()} pacientes en total</strong>, frente a los ${N} disponibles.`;
-    if(useFisher) interpText+=` Calculado por simulación Monte Carlo de Fisher exacto (IC 95%: ${(mcResult.ci_low*100).toFixed(1)}%–${(mcResult.ci_high*100).toFixed(1)}%).`;
+    barColor='#c62828';tagClass='tag-red';tagText='Baja/Muy baja';
+    interpStatText=`<strong>Potencia insuficiente (${powerPct}).</strong> El estudio NO tenía potencia adecuada. Con V de Cramér=${V.toFixed(3)} (${vI.toLowerCase()}) y N=${N}, la probabilidad de detectar la diferencia real era solo del ${powerPct}. <strong>Los resultados significativos probablemente reflejan inflación estadística.</strong> Se necesitarían <strong>${nNeeded.toLocaleString()} pacientes</strong> (actuales: ${N}).`;
   }
-
+  if(useFisher) interpStatText+=` Potencia calculada por Monte Carlo (IC 95%: ${(mc.ci_low*100).toFixed(1)}%–${(mc.ci_high*100).toFixed(1)}%).`;
+ 
   document.getElementById('power-bar').style.background=barColor;
-  document.getElementById('out-power-tag').className='tag '+tagClass;
-  document.getElementById('out-power-tag').textContent=tagText;
-  document.getElementById('interpretation').className='interp-box '+interpClass;
-  document.getElementById('interpretation').innerHTML=interpText;
-
+  document.getElementById('tag-power').className='tag '+tagClass;
+  document.getElementById('tag-power').textContent=tagText;
+  const interpStat=document.getElementById('interp-stat');
+  interpStat.className='interp-box '+(power>=0.80?'interp-green':power>=0.50?'interp-orange':'interp-red');
+  interpStat.innerHTML=interpStatText;
+ 
+  // OR SECTION
+  const orHead=document.getElementById('or-head');
+  const orBody=document.getElementById('or-body');
+  const interpClin=document.getElementById('interp-clinical');
+ 
+  if(varType==='binary') {
+    document.getElementById('or-section-title').textContent='Odds ratios con IC 95% (ref: '+gNames[0]+')';
+    orHead.innerHTML='<th>Comparación</th><th>OR</th><th>IC 95%</th><th>Valoración clínica</th>';
+    orBody.innerHTML='';
+    let clinHTML='';
+    for(let j=1;j<k;j++) {
+      const a=obs[0][j], b=obs[1][j], c=obs[0][0], d=obs[1][0];
+      const {or,lo,hi,hasZero}=calcOR(a,b,c,d);
+      const {strength,strengthClass,clinMsg}=clinicalInterpOR(or,lo,hi,varname,gNames[j],gNames[0],'');
+      const crossesOne=(lo<=1&&hi>=1);
+      const orClass=crossesOne?'or-ns':hasZero?'or-wide':'or-sig';
+      orBody.innerHTML+=`<tr>
+        <td style="font-weight:500;">${gNames[j]} vs ${gNames[0]}</td>
+        <td class="${orClass}">${fmtOR(or)}${hasZero?'*':''}</td>
+        <td>${fmtOR(lo)} – ${fmtOR(hi)}</td>
+        <td><span class="clinical-badge ${strengthClass}">${strength}</span></td>
+      </tr>`;
+      clinHTML+=`<div class="interp-box interp-blue" style="margin-bottom:0.5rem;">
+        <strong>${gNames[j]} vs ${gNames[0]}:</strong> ${clinMsg}
+      </div>`;
+    }
+    if(obs[0].some((_,j)=>obs[0][j]===0||obs[1][j]===0)) {
+      orBody.innerHTML+=`<tr><td colspan="4" class="note" style="padding-top:6px;">* OR calculado con corrección de Haldane (suma de 0.5) por presencia de celdas con valor 0.</td></tr>`;
+    }
+    interpClin.innerHTML=clinHTML;
+ 
+  } else {
+    const refJ=Math.min(refIdx, k-1);
+    document.getElementById('or-section-title').textContent=`Odds ratios con IC 95% (ref: ${gNames[refJ]})`;
+    orHead.innerHTML='<th>Categoría</th><th>Grupo</th><th>OR vs ref</th><th>IC 95%</th><th>Valoración clínica</th>';
+    orBody.innerHTML='';
+    let clinHTML='', hasHaldane=false;
+    for(let i=0;i<mEff;i++) {
+      for(let j=0;j<k;j++) {
+        if(j===refJ) continue;
+        const a=obs[i][j], b=colT[j]-obs[i][j];
+        const c=obs[i][refJ], d=colT[refJ]-obs[i][refJ];
+        const {or,lo,hi,hasZero}=calcOR(a,b,c,d);
+        if(hasZero) hasHaldane=true;
+        const {strength,strengthClass,clinMsg}=clinicalInterpOR(or,lo,hi,varname,gNames[j],gNames[refJ],cNames[i]);
+        const crossesOne=(lo<=1&&hi>=1);
+        const orClass=crossesOne?'or-ns':hasZero?'or-wide':'or-sig';
+        orBody.innerHTML+=`<tr>
+          <td style="font-weight:500;">${cNames[i]}</td>
+          <td>${gNames[j]}</td>
+          <td class="${orClass}">${fmtOR(or)}${hasZero?'*':''}</td>
+          <td>${fmtOR(lo)} – ${fmtOR(hi)}</td>
+          <td><span class="clinical-badge ${strengthClass}">${strength}</span></td>
+        </tr>`;
+        clinHTML+=`<div class="interp-box interp-blue" style="margin-bottom:0.5rem;font-size:13px;">
+          <strong>${cNames[i]} · ${gNames[j]} vs ${gNames[refJ]}:</strong> ${clinMsg}
+        </div>`;
+      }
+    }
+    if(hasHaldane) orBody.innerHTML+=`<tr><td colspan="5" class="note" style="padding-top:6px;">* OR calculado con corrección de Haldane (suma de 0.5) por presencia de celdas con valor 0.</td></tr>`;
+    interpClin.innerHTML=clinHTML;
+  }
+ 
   const expHead=document.getElementById('exp-head');
   const expBody=document.getElementById('exp-body');
-  expHead.innerHTML='<th>Grupo</th><th>Esperada con evento</th><th>Esperada sin evento</th>';
+  expHead.innerHTML='<th></th>'+gNames.map(g=>`<th>${g}</th>`).join('');
   expBody.innerHTML='';
-  for(let i=0;i<k;i++){
-    const fE=expMatrix[i][0]<5?' style="color:#c62828;font-weight:500;"':'';
-    const fN=expMatrix[i][1]<5?' style="color:#c62828;font-weight:500;"':'';
-    expBody.innerHTML+=`<tr><td style="font-weight:500;">Grupo ${i+1}</td><td${fE}>${expMatrix[i][0].toFixed(2)}${expMatrix[i][0]<5?' ⚠':''}</td><td${fN}>${expMatrix[i][1].toFixed(2)}${expMatrix[i][1]<5?' ⚠':''}</td></tr>`;
+  for(let i=0;i<mEff;i++) {
+    let r=`<tr><td style="font-weight:500;">${cNames[i]}</td>`;
+    for(let j=0;j<k;j++){const exp=expMatrix[i][j];const flag=exp<5?' style="color:#c62828;font-weight:500;"':'';r+=`<td${flag}>${exp.toFixed(2)}${exp<5?' ⚠':''}</td>`;}
+    r+='</tr>'; expBody.innerHTML+=r;
   }
-  const pctB=(cellsBelow5/totalCells*100).toFixed(0);
   document.getElementById('cochran-note').textContent=cellsBelow5===0
-    ?'Condición de Cochran cumplida: todas las frecuencias esperadas ≥ 5. Chi-cuadrado válido.'
-    :`${cellsBelow5} celda(s) con frecuencia esperada <5 (${pctB}% del total). Se ha usado automáticamente Fisher exacto por Monte Carlo.`;
-
+    ?'Condición de Cochran cumplida: todas las frecuencias esperadas ≥5.'
+    :`${cellsBelow5} celda(s) con frecuencia esperada <5 (${(cellsBelow5/totalCells*100).toFixed(0)}% del total). Se ha usado Monte Carlo de Fisher exacto.`;
+ 
   document.getElementById('out-nneeded').textContent=nNeeded.toLocaleString();
-  document.getElementById('out-nneeded-sub').textContent=`con α=${alpha}, potencia=80%, w=${w.toFixed(3)}`;
+  document.getElementById('out-nneeded-sub').textContent=`α=${alpha}, potencia=80%, w=${w.toFixed(3)}, df=${df}`;
   document.getElementById('out-nactual').textContent=N.toLocaleString();
   document.getElementById('results').scrollIntoView({behavior:'smooth'});
 }
-
-buildGroups();
+ 
+buildDataGrid();
 </script>
 </body>
 </html>
