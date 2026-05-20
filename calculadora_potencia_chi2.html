@@ -32,13 +32,12 @@ button.small { padding: 5px 12px; font-size: 13px; }
 .tag-green { background: #e8f5e9; color: #2e7d32; }
 .tag-orange { background: #fff3e0; color: #e65100; }
 .tag-red { background: #fce4ec; color: #c62828; }
-.tag-blue { background: #e3f2fd; color: #0d47a1; }
-.tag-gray { background: #f0f0f0; color: #666; }
 .interp-box { border-radius: 8px; padding: 1rem; font-size: 14px; line-height: 1.6; border-left: 3px solid; margin-bottom: 0.75rem; }
 .interp-green { background: #f0faf0; border-color: #2e7d32; color: #1b5e20; }
 .interp-orange { background: #fffbf0; border-color: #e65100; color: #bf360c; }
 .interp-red { background: #fdf0f0; border-color: #c62828; color: #7f0000; }
-.interp-blue { background: #e8f4fd; border-color: #1565c0; color: #0d47a1; }
+.interp-blue { background: #f0f4ff; border-color: #3949ab; color: #1a237e; }
+.interp-gray { background: #f5f5f5; border-color: #bbb; color: #444; }
 .method-badge { display: inline-flex; font-size: 12px; padding: 4px 12px; border-radius: 20px; font-weight: 500; margin-bottom: 1rem; border: 1px solid; }
 .method-chi2 { background: #e8f5e9; color: #2e7d32; border-color: #a5d6a7; }
 .method-fisher { background: #e3f2fd; color: #0d47a1; border-color: #90caf9; }
@@ -49,6 +48,7 @@ td { padding: 6px 8px; border-bottom: 0.5px solid #f0f0f0; }
 tr:last-child td { border-bottom: none; }
 .note { font-size: 12px; color: #888; line-height: 1.5; }
 .section-title { font-size: 13px; font-weight: 500; color: #444; margin-bottom: 0.75rem; padding-bottom: 6px; border-bottom: 0.5px solid #eee; }
+.group-section-title { font-size: 13px; font-weight: 500; color: #3949ab; margin: 1rem 0 0.5rem; padding-bottom: 4px; border-bottom: 0.5px solid #c5cae9; }
 .hidden { display: none; }
 .flex-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
 .spacer { height: 1rem; }
@@ -56,26 +56,26 @@ tr:last-child td { border-bottom: none; }
 .mode-tab.active { background: #7A00E6; color: #fff; border-color: #7A00E6; }
 #loading-msg { font-size: 13px; color: #7A00E6; font-style: italic; }
 .data-grid { overflow-x: auto; margin-top: 0.5rem; }
-.data-grid table { min-width: 400px; }
 .group-name-input { font-size: 12px; padding: 4px 6px; font-weight: 500; color: #7A00E6; border-color: #d0b8f7; }
+.ref-input { font-size: 12px; padding: 4px 6px; font-weight: 500; color: #888; border-color: #ddd; background: #f9f9f9; }
 .cat-name-input { font-size: 12px; padding: 4px 6px; border: none; border-bottom: 0.5px solid #ddd; border-radius: 0; background: transparent; }
 .total-cell { font-size: 13px; color: #888; text-align: center; padding: 4px 8px; }
-.or-sig { color: #2e7d32; font-weight: 500; }
+.cb-strong { display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:#e8f5e9;color:#2e7d32; }
+.cb-moderate { display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:#fff3e0;color:#e65100; }
+.cb-weak { display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:#fce4ec;color:#c62828; }
+.cb-ns { display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:#f0f0f0;color:#666; }
+.cb-inconclusive { display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:#fff8e1;color:#f57f17; }
+.or-val { font-weight: 500; }
+.or-sig { color: #1b5e20; }
 .or-ns { color: #888; }
 .or-wide { color: #e65100; }
-.or-inf { color: #c62828; font-style: italic; }
-.clinical-badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 10px; margin-left: 6px; }
-.cb-strong { background: #e8f5e9; color: #2e7d32; }
-.cb-moderate { background: #fff3e0; color: #e65100; }
-.cb-weak { background: #fce4ec; color: #c62828; }
-.cb-inconclusive { background: #f0f0f0; color: #666; }
 </style>
 </head>
 <body>
- 
+
 <h1>Calculadora de potencia estadística post hoc</h1>
 <p class="subtitle">Chi-cuadrado / Fisher exacto por Monte Carlo · Odds ratios con IC 95% · Interpretación estadística y clínica</p>
- 
+
 <div class="card">
   <div class="section-title">Configuración</div>
   <div class="grid-3" style="margin-bottom:1rem;">
@@ -92,7 +92,7 @@ tr:last-child td { border-bottom: none; }
       <input type="number" id="alpha" value="0.05" min="0.01" max="0.20" step="0.01">
     </div>
   </div>
- 
+
   <div style="margin-bottom:1rem;">
     <div style="font-size:13px;color:#555;margin-bottom:8px;">Tipo de variable</div>
     <div class="flex-row" style="gap:8px;">
@@ -100,7 +100,7 @@ tr:last-child td { border-bottom: none; }
       <button class="mode-tab" id="tab-cat" onclick="setType('cat')">Categórica (m categorías)</button>
     </div>
   </div>
- 
+
   <div id="bin-options" style="margin-bottom:0.75rem;">
     <div class="flex-row">
       <span style="font-size:13px;color:#555;">Modo:</span>
@@ -112,23 +112,17 @@ tr:last-child td { border-bottom: none; }
       </label>
     </div>
   </div>
- 
+
   <div id="cat-options" class="hidden" style="margin-bottom:0.75rem;">
-    <div class="flex-row" style="gap:16px;">
-      <div class="flex-row" style="gap:8px;">
-        <span style="font-size:13px;color:#555;">Número de categorías:</span>
-        <input type="number" id="ncats" value="4" min="2" max="12" style="width:70px;" onchange="buildDataGrid()">
-      </div>
-      <div class="flex-row" style="gap:8px;">
-        <span style="font-size:13px;color:#555;">Grupo de referencia (OR):</span>
-        <select id="ref-group" style="width:140px;"></select>
-      </div>
+    <div class="flex-row" style="gap:8px;">
+      <span style="font-size:13px;color:#555;">Número de categorías:</span>
+      <input type="number" id="ncats" value="4" min="2" max="12" style="width:70px;" onchange="buildDataGrid()">
     </div>
   </div>
- 
-  <div class="section-title" style="margin-top:0.5rem;">Datos</div>
+
+  <div class="section-title" style="margin-top:0.5rem;">Datos <span id="data-section-note" style="font-size:11px;font-weight:400;color:#888;">(la primera categoría es la referencia para los OR)</span></div>
   <div class="data-grid" id="data-grid"></div>
- 
+
   <div class="spacer"></div>
   <div class="flex-row">
     <button class="primary" onclick="calcular()">Calcular</button>
@@ -137,17 +131,17 @@ tr:last-child td { border-bottom: none; }
     <span id="loading-msg" class="hidden">Simulando Fisher exacto (10.000 iteraciones)...</span>
   </div>
 </div>
- 
+
 <div class="card hidden" id="results">
   <div id="badge-wrap"></div>
   <div id="fisher-info" class="fisher-info hidden"></div>
- 
+
   <div class="section-title">Tabla de contingencia</div>
   <div style="overflow-x:auto;margin-bottom:0.5rem;">
     <table><thead><tr id="ct-head"></tr></thead><tbody id="ct-body"></tbody></table>
   </div>
   <p class="note hidden" id="pct-note">Nota: N total estimado a partir de n evento y porcentaje. Pequeñas diferencias de redondeo son esperables.</p>
- 
+
   <div class="spacer"></div>
   <div class="section-title">Estadísticos globales</div>
   <div class="grid-4" style="margin-bottom:1.25rem;">
@@ -172,7 +166,7 @@ tr:last-child td { border-bottom: none; }
       <div class="metric-sub" id="out-wsub">—</div>
     </div>
   </div>
- 
+
   <div class="section-title">Potencia estadística post hoc</div>
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
     <span style="font-size:14px;color:#555;" id="lbl-power">Potencia</span>
@@ -188,27 +182,21 @@ tr:last-child td { border-bottom: none; }
     <span style="font-size:11px;color:#aaa;">100%</span>
   </div>
   <p id="mc-note" style="font-size:12px;color:#888;margin-top:6px;"></p>
- 
+
   <div class="spacer"></div>
   <div class="section-title">Interpretación estadística</div>
   <div id="interp-stat" class="interp-box"></div>
- 
+
   <div class="spacer"></div>
-  <div class="section-title" id="or-section-title">Odds ratios con IC 95%</div>
-  <div style="overflow-x:auto;margin-bottom:0.75rem;">
-    <table><thead><tr id="or-head"></tr></thead><tbody id="or-body"></tbody></table>
-  </div>
-  <div class="spacer"></div>
-  <div class="section-title">Interpretación clínica de los OR</div>
-  <div id="interp-clinical"></div>
- 
+  <div id="or-section-wrap"></div>
+
   <div class="spacer"></div>
   <div class="section-title">Frecuencias esperadas</div>
   <div style="overflow-x:auto;margin-bottom:0.5rem;">
     <table><thead><tr id="exp-head"></tr></thead><tbody id="exp-body"></tbody></table>
   </div>
   <p class="note" id="cochran-note"></p>
- 
+
   <div class="spacer"></div>
   <div class="section-title">N necesaria para potencia 80%</div>
   <div class="grid-2">
@@ -224,51 +212,231 @@ tr:last-child td { border-bottom: none; }
     </div>
   </div>
 </div>
- 
-<div class="card">
-  <p class="note"><strong>Nota metodológica:</strong> Si todas las frecuencias esperadas ≥5 (condición de Cochran), se usa chi-cuadrado no central analítico (Cohen 1988). Si alguna es &lt;5, se usa simulación Monte Carlo de Fisher exacto (10.000 iteraciones). Los OR se calculan por el método de Woolf con corrección de Haldane (suma de 0.5 a cada celda cuando hay ceros). IC 95% del OR: exp(ln(OR) ± 1.96·SE), donde SE=√(1/a+1/b+1/c+1/d). Un IC que cruza 1 indica ausencia de asociación estadísticamente significativa. Un IC muy amplio indica incertidumbre por N insuficiente, independientemente del p-valor.</p>
+
+<div class="card" style="padding:0;overflow:hidden;">
+  <div style="display:flex;border-bottom:0.5px solid #eee;overflow-x:auto;">
+    <button onclick="showMetaTab('m-uso')" id="mbtn-uso" class="meta-tab active-tab">¿Cómo usar?</button>
+    <button onclick="showMetaTab('m-power')" id="mbtn-power" class="meta-tab">Potencia estadística</button>
+    <button onclick="showMetaTab('m-test')" id="mbtn-test" class="meta-tab">Chi² vs Fisher</button>
+    <button onclick="showMetaTab('m-or')" id="mbtn-or" class="meta-tab">Odds ratio e IC</button>
+    <button onclick="showMetaTab('m-clin')" id="mbtn-clin" class="meta-tab">Interpretación clínica</button>
+    <button onclick="showMetaTab('m-ref')" id="mbtn-ref" class="meta-tab">Referencias</button>
+  </div>
+
+  <div id="m-uso" class="meta-panel" style="display:block;">
+    <h3 class="meta-h">¿Para qué sirve esta calculadora?</h3>
+    <p class="meta-p">Esta herramienta fue diseñada para evaluar si el p-valor obtenido en un test de comparación entre grupos tiene validez estadística, especialmente cuando algunas categorías tienen tamaños muestrales pequeños. Es habitual en estudios de datos reales (RWE) que ciertas celdas de la tabla de contingencia tengan muy pocos pacientes, lo que compromete la validez del chi-cuadrado estándar. La calculadora detecta automáticamente ese problema y actúa en consecuencia.</p>
+
+    <h3 class="meta-h">Variable binaria (sí/no)</h3>
+    <p class="meta-p">Úsala cuando la variable que quieres analizar tiene dos posibles valores: el paciente tiene o no tiene el evento (por ejemplo, enfermedad cerebrovascular, mortalidad, hospitalización). Introduces el número de pacientes con el evento y el total de cada grupo de tratamiento, o directamente el porcentaje si es lo que tienes en la tabla publicada. El primer grupo introducido es la referencia para los odds ratios.</p>
+
+    <h3 class="meta-h">Variable categórica (m categorías)</h3>
+    <p class="meta-p">Úsala cuando la variable tiene más de dos categorías ordenadas o no ordenadas (por ejemplo, estadio GOLD I/II/III/IV, grupos de edad, nivel de eosinofilia). Introduces las frecuencias absolutas de cada categoría dentro de cada grupo. La primera categoría es la referencia para los odds ratios. Las filas con todos los valores a cero se ignoran automáticamente.</p>
+
+    <h3 class="meta-h">Modos de entrada</h3>
+    <p class="meta-p">En modo binario puedes introducir los datos de dos formas: <strong>n evento + N total</strong> (cuando tienes los datos crudos) o <strong>n evento + %</strong> (cuando solo tienes la tabla publicada con el porcentaje). En el segundo caso, el N total se estima como redondeo de n/porcentaje, por lo que pueden aparecer pequeñas diferencias de redondeo.</p>
+  </div>
+
+  <div id="m-power" class="meta-panel" style="display:none;">
+    <h3 class="meta-h">¿Qué es la potencia estadística?</h3>
+    <p class="meta-p">La potencia estadística (1−β) es la probabilidad de detectar un efecto real cuando ese efecto existe. Una potencia del 80% significa que, si la diferencia entre grupos es real, el estudio la detectaría en el 80% de los casos. La potencia depende de tres factores: el tamaño del efecto (cuánto difieren los grupos), el tamaño muestral (cuántos pacientes hay) y el nivel de significación α.</p>
+
+    <h3 class="meta-h">Análisis post hoc</h3>
+    <p class="meta-p">Esta calculadora hace un análisis de potencia <strong>post hoc</strong>: calcula la potencia que tenía el estudio con los datos que ya existen, no la potencia que se necesitaría para un estudio futuro. Esto es útil para evaluar si un resultado significativo es fiable o si un resultado no significativo podría deberse simplemente a falta de potencia.</p>
+
+    <h3 class="meta-h">Interpretación de la potencia</h3>
+    <p class="meta-p">El umbral convencional es <strong>80%</strong> (Cohen, 1988). Por debajo de ese umbral:</p>
+    <ul class="meta-ul">
+      <li><strong>50–79%</strong>: potencia moderada. El resultado debe interpretarse con cautela. Existe riesgo de inflación del efecto (winner's curse): cuando la potencia es baja, los efectos que sí se detectan tienden a estar sobreestimados.</li>
+      <li><strong>&lt;50%</strong>: potencia baja. Un resultado significativo probablemente refleja variabilidad muestral más que un efecto real. No es evidencia clínica sólida.</li>
+    </ul>
+
+    <h3 class="meta-h">Tamaño del efecto: V de Cramér</h3>
+    <p class="meta-p">La V de Cramér es la medida del tamaño del efecto para tablas de contingencia. Se calcula como √(χ²/N·min(filas−1, columnas−1)) y toma valores entre 0 y 1. Las convenciones de Cohen (1988) son: &lt;0.10 efecto negligible, 0.10–0.30 pequeño, 0.30–0.50 moderado, &gt;0.50 grande. Importante: un resultado puede ser estadísticamente significativo con una V negligible si la N es muy grande, o no significativo con una V grande si la N es pequeña.</p>
+
+    <h3 class="meta-h">N necesaria para potencia 80%</h3>
+    <p class="meta-p">La calculadora estima cuántos pacientes en total se necesitarían para alcanzar una potencia del 80% con el efecto observado. Si la N actual es muy inferior a la necesaria, el estudio estaba infrapotenciado para detectar ese efecto. Si la N actual es muy superior, el estudio podría detectar diferencias estadísticamente significativas pero clínicamente irrelevantes.</p>
+
+    <h3 class="meta-h">Método de cálculo de la potencia</h3>
+    <p class="meta-p">Cuando todas las frecuencias esperadas son ≥5 (condición de Cochran cumplida), se usa la distribución chi-cuadrado no central analítica con parámetro de no centralidad λ = w²·N. Cuando hay frecuencias esperadas &lt;5 y ninguna celda con cero exacto, se usa simulación Monte Carlo (10.000 iteraciones) que genera tablas bajo las proporciones observadas como hipótesis alternativa. Cuando hay ceros exactos, la simulación Monte Carlo no es fiable y se usa la aproximación analítica con una nota de cautela.</p>
+  </div>
+
+  <div id="m-test" class="meta-panel" style="display:none;">
+    <h3 class="meta-h">El test chi-cuadrado de independencia</h3>
+    <p class="meta-p">El test chi-cuadrado de independencia evalúa si la distribución de una variable difiere entre grupos. Compara las frecuencias observadas con las que se esperarían si no hubiera ninguna diferencia entre grupos (frecuencias esperadas). El estadístico χ² = Σ(O−E)²/E sigue una distribución chi-cuadrado con df = (filas−1)×(columnas−1) grados de libertad bajo la hipótesis nula.</p>
+
+    <h3 class="meta-h">La condición de Cochran</h3>
+    <p class="meta-p">El chi-cuadrado estándar es una aproximación que solo funciona bien cuando las frecuencias <strong>esperadas</strong> (no las observadas) son suficientemente grandes. La regla de Cochran establece que no más del 20% de las celdas deberían tener frecuencias esperadas &lt;5, y ninguna celda debería tener frecuencia esperada &lt;1. Si esto no se cumple, la aproximación chi-cuadrado es inválida y el p-valor no es fiable.</p>
+    <p class="meta-p">La calculadora muestra las frecuencias esperadas de cada celda y marca en rojo las que incumplen la condición. Cuando hay incumplimiento, cambia automáticamente el método.</p>
+
+    <h3 class="meta-h">¿Por qué Fisher exacto?</h3>
+    <p class="meta-p">El test exacto de Fisher no necesita la aproximación chi-cuadrado: calcula directamente la probabilidad exacta de obtener una tabla igual o más extrema que la observada, usando la distribución hipergeométrica. Es el método correcto cuando hay celdas con frecuencias esperadas &lt;5. Su limitación es que es computacionalmente intensivo para tablas grandes (más de 2 filas o columnas), por lo que esta calculadora usa simulación Monte Carlo para aproximarlo.</p>
+
+    <h3 class="meta-h">¿Por qué Monte Carlo?</h3>
+    <p class="meta-p">Fisher exacto en tablas m×k (más de 2 filas) requiere enumerar todas las tablas posibles con los mismos marginales, lo cual es computacionalmente prohibitivo. La simulación Monte Carlo genera miles de tablas aleatorias bajo la hipótesis nula y estima el p-valor como la proporción de tablas más extremas que la observada. Con 10.000 iteraciones, el error estándar de la potencia estimada es √(p(1−p)/10000) ≈ 0.5%, lo que es suficientemente preciso para uso práctico.</p>
+
+    <h3 class="meta-h">Cuándo la simulación no es fiable</h3>
+    <p class="meta-p">Cuando alguna celda tiene exactamente 0 observaciones, la proporción simulada es 0 y randBinom(N, 0) siempre devuelve 0. La simulación nunca genera variación en esa categoría y la potencia estimada es artificialmente baja (a veces 0%). En ese caso, la calculadora usa automáticamente la aproximación analítica chi-cuadrado no central e indica esta limitación.</p>
+  </div>
+
+  <div id="m-or" class="meta-panel" style="display:none;">
+    <h3 class="meta-h">¿Qué es el odds ratio?</h3>
+    <p class="meta-p">El odds ratio (OR) compara las odds de un evento entre dos grupos. Las odds de un evento son p/(1−p), donde p es la probabilidad. El OR = (odds del grupo A) / (odds del grupo de referencia). Un OR=1 significa que no hay diferencia. Un OR&gt;1 significa que el evento es más probable en el grupo A. Un OR&lt;1 significa que es menos probable.</p>
+    <p class="meta-p">Para variable binaria: OR compara la probabilidad del evento entre cada grupo de tratamiento y el grupo de referencia. Para variable categórica: OR compara la probabilidad de estar en cada categoría vs la categoría de referencia, dentro de cada grupo de tratamiento por separado.</p>
+
+    <h3 class="meta-h">Método de Woolf con corrección de Haldane</h3>
+    <p class="meta-p">El OR se calcula por el método de Woolf: OR = (a·d)/(b·c) en una tabla 2×2. Cuando alguna celda tiene valor 0, este OR es infinito o indefinido. La corrección de Haldane suma 0.5 a cada celda antes de calcular: OR = (a+0.5)(d+0.5)/((b+0.5)(c+0.5)). Esta corrección introduce un sesgo mínimo pero permite obtener una estimación finita. La calculadora indica con un asterisco (*) cuándo se ha aplicado.</p>
+
+    <h3 class="meta-h">Intervalo de confianza del OR</h3>
+    <p class="meta-p">El IC 95% se calcula por el método de Woolf: IC = exp(ln(OR) ± 1.96·SE), donde SE = √(1/a + 1/b + 1/c + 1/d). Un IC que cruza 1 indica que no hay evidencia de asociación estadísticamente significativa al nivel α=0.05. El p-valor del OR se calcula por el test Z: z = ln(OR)/SE, p = 2·(1−Φ(|z|)).</p>
+
+    <h3 class="meta-h">Criterios de interpretabilidad del OR</h3>
+    <p class="meta-p">Un OR puede ser matemáticamente calculable pero clínicamente no interpretable. La calculadora aplica los siguientes criterios en orden de prioridad:</p>
+    <ul class="meta-ul">
+      <li><strong>No interpretable</strong>: OR &gt;999 (asimetría extrema entre celdas), o n &lt;10 en la categoría de referencia o comparada, o ratio IC superior/inferior &gt;50 (IC extremadamente amplio).</li>
+      <li><strong>Inconcluyente</strong>: ratio IC superior/inferior &gt;10. El OR es calculable pero la incertidumbre es tan alta que no se puede concluir nada con seguridad.</li>
+      <li><strong>No significativo</strong>: IC 95% cruza 1. No hay evidencia de asociación.</li>
+      <li><strong>Efecto débil, moderado o fuerte</strong>: solo cuando el IC es razonable (ratio ≤10) y no cruza 1.</li>
+    </ul>
+
+    <h3 class="meta-h">¿Por qué n≥10 como umbral?</h3>
+    <p class="meta-p">El criterio estadístico mínimo formal para la validez del OR de Woolf es min(celda)≥5 (Baptista & Pike, 1977; Agresti, 2002). Sin embargo, en el contexto clínico-epidemiológico, con solo 5 pacientes en una celda el IC es tan amplio que la estimación no es clínicamente informativa: una sola observación diferente cambia el OR sustancialmente y la reproducibilidad es mínima. El umbral de 10 es más conservador pero más apropiado para estudios con implicaciones clínicas, como los estudios RWE donde los resultados pueden informar decisiones terapéuticas.</p>
+  </div>
+
+  <div id="m-clin" class="meta-panel" style="display:none;">
+    <h3 class="meta-h">Significación estadística vs relevancia clínica</h3>
+    <p class="meta-p">Un resultado estadísticamente significativo (p&lt;0.05) no implica automáticamente relevancia clínica, y un resultado no significativo no implica ausencia de efecto. La significación estadística depende tanto del tamaño del efecto como del tamaño muestral. Con N muy grandes (como en bases de datos de salud poblacional), diferencias mínimas y clínicamente irrelevantes pueden ser estadísticamente significativas. Con N pequeñas, efectos clínicamente importantes pueden no alcanzar significación.</p>
+
+    <h3 class="meta-h">Magnitud clínica del OR</h3>
+    <p class="meta-p">Las convenciones de magnitud del OR son orientativas y deben interpretarse siempre en contexto clínico:</p>
+    <ul class="meta-ul">
+      <li><strong>OR &lt;1.5 o &gt;0.67</strong>: efecto débil. Relevancia clínica limitada salvo que el evento sea muy grave o frecuente.</li>
+      <li><strong>OR 1.5–3 o 0.33–0.67</strong>: efecto moderado. Potencialmente relevante. Requiere valoración clínica del contexto.</li>
+      <li><strong>OR &gt;3 o &lt;0.33</strong>: efecto fuerte. Clínicamente importante si el IC es razonable y el resultado es reproducible.</li>
+    </ul>
+    <p class="meta-p">Estas categorías no son absolutas. Un OR=1.3 puede ser clínicamente muy relevante si el evento es mortalidad, e irrelevante si es un efecto adverso leve transitorio.</p>
+
+    <h3 class="meta-h">El problema del winner's curse</h3>
+    <p class="meta-p">Cuando la potencia es baja, los estudios tienden a detectar solo los efectos más extremos por pura variabilidad muestral. Los efectos que sí se detectan con baja potencia están sistemáticamente sobreestimados. Este fenómeno se llama winner's curse o sesgo de publicación de magnitud. Un OR de 8 obtenido con n=12 es mucho menos creíble que un OR de 3 obtenido con n=500, incluso si ambos son estadísticamente significativos.</p>
+
+    <h3 class="meta-h">Múltiples comparaciones</h3>
+    <p class="meta-p">Si analizas muchas variables simultáneamente (como en una tabla de características basales), la probabilidad de encontrar al menos un resultado significativo por azar aumenta. Con 20 variables y α=0.05, se esperan aproximadamente 1 resultado falso positivo por puro azar. Esta calculadora analiza cada variable por separado y no aplica corrección por múltiples comparaciones. Si usas los resultados en un contexto donde se analizan muchas variables, considera aplicar Benjamini-Hochberg (FDR) externamente.</p>
+
+    <h3 class="meta-h">Limitaciones de la herramienta</h3>
+    <ul class="meta-ul">
+      <li>El análisis de potencia post hoc usa el efecto observado como estimación del efecto real, lo cual es circular: si la muestra es pequeña, el efecto observado puede estar inflado.</li>
+      <li>Los OR calculados son crudos (no ajustados). No controlan por variables de confusión. Para inferencia causal se requiere ajuste multivariante o PSM.</li>
+      <li>El método de Woolf con Haldane es una aproximación. Para tablas muy pequeñas, los métodos exactos (como el OR condicional de Cornfield) son más precisos pero computacionalmente más complejos.</li>
+      <li>La potencia Monte Carlo con celdas de cero exacto es inestable y se sustituye por la aproximación analítica, que puede diferir de la potencia real.</li>
+    </ul>
+  </div>
+
+  <div id="m-ref" class="meta-panel" style="display:none;">
+    <h3 class="meta-h">Referencias metodológicas</h3>
+    <ul class="meta-ul" style="line-height:2;">
+      <li><strong>Cohen J (1988).</strong> Statistical Power Analysis for the Behavioral Sciences (2nd ed.). Lawrence Erlbaum Associates. — Convenciones de tamaño del efecto (w, V de Cramér) y potencia estadística.</li>
+      <li><strong>Cochran WG (1954).</strong> Some methods for strengthening the common χ² tests. Biometrics, 10(4), 417–451. — Condición de Cochran para validez del chi-cuadrado.</li>
+      <li><strong>Fisher RA (1922).</strong> On the interpretation of χ² from contingency tables, and the calculation of P. Journal of the Royal Statistical Society, 85(1), 87–94. — Test exacto de Fisher.</li>
+      <li><strong>Woolf B (1955).</strong> On estimating the relation between blood group and disease. Annals of Human Genetics, 19(4), 251–253. — Método de Woolf para OR en tablas 2×2.</li>
+      <li><strong>Haldane JBS (1956).</strong> The estimation and significance of the logarithm of a ratio of frequencies. Annals of Human Genetics, 20(4), 309–311. — Corrección de Haldane para celdas con cero.</li>
+      <li><strong>Baptista J & Pike MC (1977).</strong> Exact two-sided confidence limits for the odds ratio in a 2×2 table. Journal of the Royal Statistical Society Series C, 26(2), 214–220. — Criterio min(celda)≥5 para OR de Woolf.</li>
+      <li><strong>Agresti A (2002).</strong> Categorical Data Analysis (2nd ed.). Wiley. — Referencia general para tablas de contingencia, OR e IC.</li>
+      <li><strong>Peduzzi P et al. (1996).</strong> A simulation study of the number of events per variable in logistic regression analysis. Journal of Clinical Epidemiology, 49(12), 1373–1379. — Regla EPV (events per variable), contexto de regresión logística.</li>
+      <li><strong>Cramér H (1946).</strong> Mathematical Methods of Statistics. Princeton University Press. — V de Cramér como medida de asociación.</li>
+      <li><strong>Benjamini Y & Hochberg Y (1995).</strong> Controlling the false discovery rate: a practical and powerful approach to multiple testing. Journal of the Royal Statistical Society Series B, 57(1), 289–300. — FDR para múltiples comparaciones.</li>
+    </ul>
+  </div>
 </div>
- 
+
+<style>
+.meta-tab { border:none; border-bottom:2px solid transparent; padding:10px 16px; font-size:13px; color:#666; background:#fff; cursor:pointer; white-space:nowrap; }
+.meta-tab:hover { color:#1a1a1a; background:#fafaf8; }
+.active-tab { border-bottom:2px solid #7A00E6 !important; color:#7A00E6 !important; font-weight:500; }
+.meta-panel { padding:1.25rem 1.5rem; }
+.meta-h { font-size:14px; font-weight:500; color:#1a1a1a; margin:1.25rem 0 0.5rem; padding-bottom:4px; border-bottom:0.5px solid #f0f0f0; }
+.meta-h:first-child { margin-top:0; }
+.meta-p { font-size:13px; color:#444; line-height:1.7; margin-bottom:0.75rem; }
+.meta-ul { font-size:13px; color:#444; line-height:1.7; margin:0.5rem 0 0.75rem 1.25rem; }
+.meta-ul li { margin-bottom:0.4rem; }
+</style>
+
+<script>
+function showMetaTab(id) {
+  document.querySelectorAll('.meta-panel').forEach(p=>p.style.display='none');
+  document.querySelectorAll('.meta-tab').forEach(b=>b.classList.remove('active-tab'));
+  document.getElementById(id).style.display='block';
+  document.getElementById('mbtn-'+id.replace('m-','')).classList.add('active-tab');
+}
+</script>
+
 <script>
 let varType = 'binary';
- 
+
+
 function setType(t) {
-  varType = t;
-  document.getElementById('tab-bin').className  = 'mode-tab'+(t==='binary'?' active':'');
-  document.getElementById('tab-cat').className  = 'mode-tab'+(t==='cat'?' active':'');
-  document.getElementById('bin-options').classList.toggle('hidden', t!=='binary');
-  document.getElementById('cat-options').classList.toggle('hidden', t!=='cat');
+  // Save current data before switching
+  saveGridState();
+  varType=t;
+  document.getElementById('tab-bin').className='mode-tab'+(t==='binary'?' active':'');
+  document.getElementById('tab-cat').className='mode-tab'+(t==='cat'?' active':'');
+  document.getElementById('bin-options').classList.toggle('hidden',t!=='binary');
+  document.getElementById('cat-options').classList.toggle('hidden',t!=='cat');
+  document.getElementById('data-section-note').textContent=
+    t==='cat'?'(la primera categoría es la referencia para los OR)':'';
   buildDataGrid();
+  restoreGridState();
 }
-function getK() { return Math.max(2, parseInt(document.getElementById('ngroups').value)||3); }
-function getM() { return varType==='cat' ? Math.max(2, parseInt(document.getElementById('ncats').value)||4) : 2; }
-function getPctMode() { const el=document.querySelector('input[name="imode"]:checked'); return el?el.value==='npct':false; }
- 
-function updateRefGroupSelect() {
-  const k=getK();
-  const sel=document.getElementById('ref-group');
-  if(!sel) return;
-  const prev=sel.value;
-  sel.innerHTML='';
-  for(let j=0;j<k;j++) {
-    const gname=document.getElementById('gname'+j);
-    const label=gname&&gname.value?gname.value:'Grupo '+(j+1);
-    const opt=document.createElement('option');
-    opt.value=j; opt.textContent=label;
-    sel.appendChild(opt);
+
+let savedState={};
+function saveGridState(){
+  const k=getK(),m=getM();
+  savedState={type:varType,k,m,groups:[],cats:[],cells:[]};
+  for(let j=0;j<k;j++){
+    const gn=document.getElementById('gname'+j);
+    const ev=document.getElementById('ev'+j);
+    const nt=document.getElementById('nt'+j);
+    savedState.groups.push({name:gn?gn.value:'',ev:ev?ev.value:'',nt:nt?nt.value:''});
   }
-  if(prev&&prev<k) sel.value=prev;
+  if(varType==='cat'){
+    for(let i=0;i<m;i++){
+      const cn=document.getElementById('cname'+i);
+      savedState.cats.push(cn?cn.value:'');
+      const row=[];
+      for(let j=0;j<k;j++){const el=document.getElementById('cell'+i+'_'+j);row.push(el?el.value:'');}
+      savedState.cells.push(row);
+    }
+  }
 }
- 
+function restoreGridState(){
+  if(!savedState.type||savedState.type!==varType) return;
+  const k=Math.min(savedState.k,getK());
+  const m=varType==='cat'?Math.min(savedState.m,getM()):0;
+  for(let j=0;j<k;j++){
+    const gn=document.getElementById('gname'+j); if(gn&&savedState.groups[j]) gn.value=savedState.groups[j].name;
+    const ev=document.getElementById('ev'+j); if(ev&&savedState.groups[j]) ev.value=savedState.groups[j].ev;
+    const nt=document.getElementById('nt'+j); if(nt&&savedState.groups[j]) nt.value=savedState.groups[j].nt;
+  }
+  if(varType==='cat'){
+    for(let i=0;i<m;i++){
+      const cn=document.getElementById('cname'+i); if(cn&&savedState.cats[i]!==undefined) cn.value=savedState.cats[i];
+      for(let j=0;j<k;j++){const el=document.getElementById('cell'+i+'_'+j);if(el&&savedState.cells[i]&&savedState.cells[i][j]!==undefined)el.value=savedState.cells[i][j];}
+    }
+    updateTotals();
+  }
+}
+function getK(){return Math.max(2,parseInt(document.getElementById('ngroups').value)||3);}
+function getM(){return varType==='cat'?Math.max(2,parseInt(document.getElementById('ncats').value)||4):2;}
+function getPctMode(){const el=document.querySelector('input[name="imode"]:checked');return el?el.value==='npct':false;}
+
 function buildDataGrid() {
   const k=getK(), pct=getPctMode();
   const grid=document.getElementById('data-grid');
   if(varType==='binary') {
     const col3=pct?'%':'N total';
-    let html='<table><thead><tr><th style="min-width:130px;">Grupo</th><th>n evento</th><th>'+col3+'</th></tr></thead><tbody>';
+    let html='<table><thead><tr><th style="min-width:160px;">Grupo</th><th>n evento</th><th>'+col3+'</th></tr></thead><tbody>';
     for(let j=0;j<k;j++) {
       html+=`<tr>
-        <td><input type="text" id="gname${j}" placeholder="Grupo ${j+1}" class="group-name-input" oninput="updateRefGroupSelect()"></td>
+        <td><input type="text" id="gname${j}" placeholder="Grupo ${j+1}" class="group-name-input"></td>
         <td><input type="number" id="ev${j}" min="0" placeholder="0"></td>
         <td><input type="number" id="nt${j}" min="0" step="${pct?'0.01':'1'}" placeholder="${pct?'%':'N'}"></td>
       </tr>`;
@@ -278,10 +446,13 @@ function buildDataGrid() {
   } else {
     const m=getM();
     let html='<table><thead><tr><th style="min-width:140px;">Categoría</th>';
-    for(let j=0;j<k;j++) html+=`<th><input type="text" id="gname${j}" placeholder="Grupo ${j+1}" class="group-name-input" style="width:100px;" oninput="updateRefGroupSelect()"></th>`;
-    html+='<th style="color:#aaa;min-width:60px;">Total fila</th></tr></thead><tbody>';
+    for(let j=0;j<k;j++) {
+      html+=`<th><input type="text" id="gname${j}" placeholder="Grupo ${j+1}" class="group-name-input" style="width:110px;"></th>`;
+    }
+    html+='<th style="color:#aaa;min-width:60px;">Total</th></tr></thead><tbody>';
     for(let i=0;i<m;i++) {
-      html+=`<tr><td><input type="text" id="cname${i}" placeholder="Cat. ${i+1}" class="cat-name-input" style="width:130px;"></td>`;
+      const isRef=i===0;
+      html+=`<tr><td><input type="text" id="cname${i}" placeholder="${isRef?'Cat. 1 (ref. OR)':'Cat. '+(i+1)}" class="cat-name-input" style="width:130px;"></td>`;
       for(let j=0;j<k;j++) html+=`<td><input type="number" id="cell${i}_${j}" min="0" placeholder="0" oninput="updateTotals()"></td>`;
       html+=`<td class="total-cell" id="rtot${i}">—</td></tr>`;
     }
@@ -290,43 +461,40 @@ function buildDataGrid() {
     html+='<td class="total-cell" id="gtot" style="font-weight:500;color:#444;">—</td></tr>';
     html+='</tbody></table>';
     grid.innerHTML=html;
-    updateRefGroupSelect();
   }
-  updateRefGroupSelect();
 }
- 
+
 function updateTotals() {
-  const k=getK(), m=getM();
+  const k=getK(),m=getM();
   let grand=0;
-  for(let i=0;i<m;i++) {
+  for(let i=0;i<m;i++){
     let rs=0;
     for(let j=0;j<k;j++) rs+=parseFloat(document.getElementById('cell'+i+'_'+j).value)||0;
-    const el=document.getElementById('rtot'+i); if(el) el.textContent=rs>0?rs:'—';
+    const el=document.getElementById('rtot'+i);if(el)el.textContent=rs>0?rs:'—';
     grand+=rs;
   }
-  for(let j=0;j<k;j++) {
+  for(let j=0;j<k;j++){
     let cs=0;
-    const m2=getM();
-    for(let i=0;i<m2;i++) cs+=parseFloat(document.getElementById('cell'+i+'_'+j).value)||0;
-    const el=document.getElementById('ctot'+j); if(el) el.textContent=cs>0?cs:'—';
+    for(let i=0;i<m;i++) cs+=parseFloat(document.getElementById('cell'+i+'_'+j).value)||0;
+    const el=document.getElementById('ctot'+j);if(el)el.textContent=cs>0?cs:'—';
   }
-  const gel=document.getElementById('gtot'); if(gel) gel.textContent=grand>0?grand:'—';
+  const gel=document.getElementById('gtot');if(gel)gel.textContent=grand>0?grand:'—';
 }
- 
-function getGroupNames() {
+
+function getGroupNames(){
   const k=getK();
   return Array.from({length:k},(_,j)=>{const el=document.getElementById('gname'+j);return el&&el.value?el.value:'Grupo '+(j+1);});
 }
-function getCatNames() {
+function getCatNames(){
   if(varType==='binary') return ['Con evento','Sin evento'];
   const m=getM();
   return Array.from({length:m},(_,i)=>{const el=document.getElementById('cname'+i);return el&&el.value?el.value:'Cat. '+(i+1);});
 }
- 
-function loadExample() {
+
+function loadExample(){
   document.getElementById('ngroups').value=3;
   document.getElementById('alpha').value=0.05;
-  if(varType==='binary') {
+  if(varType==='binary'){
     document.getElementById('varname').value='Precerebral artery occlusion';
     document.querySelector('input[name="imode"][value="ntotal"]').checked=true;
     buildDataGrid();
@@ -345,15 +513,12 @@ function loadExample() {
       const cel=document.getElementById('cname'+i);if(cel)cel.value=cats[i];
       for(let j=0;j<3;j++){const el=document.getElementById('cell'+i+'_'+j);if(el)el.value=data[i][j];}
     }
-    updateTotals(); updateRefGroupSelect();
+    updateTotals();
   }
 }
-function clearAll() {
-  document.getElementById('varname').value='';
-  buildDataGrid();
-  document.getElementById('results').classList.add('hidden');
-}
- 
+function clearAll(){document.getElementById('varname').value='';buildDataGrid();document.getElementById('results').classList.add('hidden');}
+
+// Stats
 function gamma(n){if(Math.abs(n-0.5)<1e-9)return Math.sqrt(Math.PI);if(Math.abs(n-1)<1e-9)return 1;if(n>=1)return(n-1)*gamma(n-1);return gamma(n+1)/n;}
 function lowerIncGamma(a,x){if(x<=0)return 0;let s=0,t=1/a,j=0;while(Math.abs(t)>1e-12&&j<300){s+=t;j++;t*=x/(a+j);}return Math.exp(-x)*Math.pow(x,a)*s;}
 function chiCDF(x,df){if(x<=0)return 0;return lowerIncGamma(df/2,x/2)/gamma(df/2);}
@@ -363,160 +528,202 @@ function findNForPower(w,df,alpha,target){if(w<0.001)return 999999;let lo=df+2,h
 function chi2Stat(obs,rowT,colT,N){let c=0;for(let i=0;i<obs.length;i++)for(let j=0;j<obs[0].length;j++){const exp=rowT[i]*colT[j]/N;if(exp>0)c+=Math.pow(obs[i][j]-exp,2)/exp;}return c;}
 function randBinom(n,p){let s=0;for(let i=0;i<n;i++)if(Math.random()<p)s++;return s;}
 function monteCarloFisher(propMatrix,colTotals,alpha,nSim){
-  const m=propMatrix.length,k=propMatrix[0].length;let rej=0;
+  const m=propMatrix.length,k=propMatrix[0].length;
+  const df=(m-1)*(k-1);
+  const N=colTotals.reduce((a,b)=>a+b,0);
+
+  // If any proportion is exactly 0, Monte Carlo is unreliable.
+  // Fall back to analytic approximation using observed chi2 as NCP estimate.
+  // This is the most defensible approach for sparse tables.
+  const hasExactZero=propMatrix.some(row=>row.some(p=>p===0));
+  if(hasExactZero){
+    // Return null to signal analytic fallback
+    return null;
+  }
+
+  // Monte Carlo for non-zero but sparse proportions
+  const crit=findChiCrit(alpha,df);
+  let rej=0,skip=0;
   for(let s=0;s<nSim;s++){
     const obs=Array.from({length:m},()=>new Array(k).fill(0));
     const rT=new Array(m).fill(0),cT=new Array(k).fill(0);let simN=0;
-    for(let j=0;j<k;j++)for(let i=0;i<m;i++){const v=randBinom(colTotals[j],propMatrix[i][j]);obs[i][j]=v;rT[i]+=v;cT[j]+=v;simN+=v;}
-    if(simN===0)continue;
-    const df=(m-1)*(k-1);
+    for(let j=0;j<k;j++)for(let i=0;i<m;i++){
+      const v=randBinom(colTotals[j],propMatrix[i][j]);
+      obs[i][j]=v;rT[i]+=v;cT[j]+=v;simN+=v;
+    }
+    if(simN===0||rT.some(r=>r===0)||cT.some(c=>c===0)){skip++;continue;}
     if(1-chiCDF(chi2Stat(obs,rT,cT,simN),df)<alpha)rej++;
   }
   const power=rej/nSim,se=Math.sqrt(power*(1-power)/nSim);
-  return{power,ci_low:Math.max(0,power-1.96*se),ci_high:Math.min(1,power+1.96*se),nSim};
+  return{power,ci_low:Math.max(0,power-1.96*se),ci_high:Math.min(1,power+1.96*se),nSim,method:'mc'};
 }
- 
-function calcOR(a,b,c,d) {
+
+function normalCDF(z) {
+  const t=1/(1+0.2316419*Math.abs(z));
+  const d=0.3989423*Math.exp(-z*z/2);
+  const p=d*t*(0.3193815+t*(-0.3565638+t*(1.7814779+t*(-1.8212560+t*1.3302744))));
+  return z>0?1-p:p;
+}
+function calcOR(a,b,c,d){
   const ah=a+0.5,bh=b+0.5,ch=c+0.5,dh=d+0.5;
   const or=ah*dh/(bh*ch);
   const se=Math.sqrt(1/ah+1/bh+1/ch+1/dh);
   const lo=Math.exp(Math.log(or)-1.96*se);
   const hi=Math.exp(Math.log(or)+1.96*se);
-  return{or,lo,hi,se,hasZero:(a===0||b===0||c===0||d===0)};
+  const z=Math.abs(Math.log(or)/se);
+  const pval=2*(1-normalCDF(z));
+  return{or,lo,hi,pval,hasZero:(a===0||b===0||c===0||d===0)};
 }
- 
-function fmtOR(v){if(!isFinite(v))return '∞';return v.toFixed(2);}
- 
-function clinicalInterpOR(or,lo,hi,varname,groupA,groupB,catLabel) {
-  const crossesOne=(lo<=1&&hi>=1);
-  const veryWide=(hi/lo>20);
+function fmtOR(v){if(!isFinite(v)||v>999)return '>999';return v.toFixed(2);}
+function fmtP(p){return p<0.001?'<0.001':p.toFixed(3);}
+
+function interpretOR(or, lo, hi, nRef, nComp){
+  const crossesOne=lo<=1&&hi>=1;
+  const ratio=hi/lo;
   const orMag=or<1?1/or:or;
-  let strength='', strengthClass='', clinMsg='';
- 
-  if(crossesOne||!isFinite(or)) {
-    strength='No significativo'; strengthClass='cb-inconclusive';
-    clinMsg=`El IC 95% cruza 1 (${fmtOR(lo)}–${fmtOR(hi)}), por lo que no hay evidencia de asociación entre ${groupA} y ${groupB}${catLabel?' para '+catLabel:''}.`;
-  } else if(veryWide) {
-    strength='Inconcluyente'; strengthClass='cb-inconclusive';
-    clinMsg=`Aunque el OR es ${fmtOR(or)}, el IC 95% es muy amplio (${fmtOR(lo)}–${fmtOR(hi)}), lo que refleja alta incertidumbre por N insuficiente. El resultado no es clínicamente concluyente.`;
-  } else if(orMag<1.5) {
-    strength='Efecto débil'; strengthClass='cb-weak';
-    clinMsg=`OR ${fmtOR(or)} (IC: ${fmtOR(lo)}–${fmtOR(hi)}). Asociación estadísticamente significativa pero de magnitud débil. Relevancia clínica limitada.`;
-  } else if(orMag<3) {
-    strength='Efecto moderado'; strengthClass='cb-moderate';
-    clinMsg=`OR ${fmtOR(or)} (IC: ${fmtOR(lo)}–${fmtOR(hi)}). Asociación moderada con relevancia clínica potencial. Requiere contexto clínico para interpretar.`;
-  } else {
-    strength='Efecto fuerte'; strengthClass='cb-strong';
-    clinMsg=`OR ${fmtOR(or)} (IC: ${fmtOR(lo)}–${fmtOR(hi)}). Asociación fuerte con relevancia clínica importante.`;
-  }
-  return{strength,strengthClass,clinMsg,crossesOne,veryWide};
+
+  // No interpretable — priman siempre sobre magnitud
+  if(!isFinite(or)||or>999)
+    return{label:'No interpretable',cls:'cb-inconclusive',
+      text:`OR extremo (${fmtOR(or)}): la asimetría entre categorías hace que el OR no tenga sentido clínico. No interpretable independientemente del p-valor.`,
+      color:'interp-gray'};
+  if(nRef!==undefined&&nRef<10)
+    return{label:'No interpretable',cls:'cb-inconclusive',
+      text:`N de la categoría de referencia insuficiente (n=${nRef}). Se necesitan al menos 10 casos en la referencia para que el OR sea fiable. Resultado no interpretable.`,
+      color:'interp-gray'};
+  if(nComp!==undefined&&nComp<10)
+    return{label:'No interpretable',cls:'cb-inconclusive',
+      text:`N de la categoría comparada insuficiente (n=${nComp}). Se necesitan al menos 10 casos para que el OR sea fiable. Resultado no interpretable.`,
+      color:'interp-gray'};
+  if(ratio>50)
+    return{label:'No interpretable',cls:'cb-inconclusive',
+      text:`IC extremadamente amplio (ratio IC=${ratio.toFixed(0)} > 50): el OR es estadísticamente inestable. Asignar una magnitud de efecto sería clínicamente engañoso.`,
+      color:'interp-gray'};
+
+  // Inconcluyente por IC amplio pero no extremo
+  if(ratio>10)
+    return{label:'Inconcluyente',cls:'cb-inconclusive',
+      text:`IC amplio (ratio IC=${ratio.toFixed(1)} > 10): incertidumbre elevada por N insuficiente. OR=${fmtOR(or)} pero no concluyente. Se necesita mayor tamaño muestral.`,
+      color:'interp-gray'};
+
+  // No significativo
+  if(crossesOne)
+    return{label:'No sig.',cls:'cb-ns',
+      text:`IC 95% cruza 1 (${fmtOR(lo)}–${fmtOR(hi)}): no hay evidencia de asociación estadísticamente significativa.`,
+      color:'interp-gray'};
+
+  // Significativo con IC razonable — ahora sí valoramos magnitud clínica
+  if(orMag<1.5) return{label:'Efecto débil',cls:'cb-weak',
+    text:`OR=${fmtOR(or)} (IC: ${fmtOR(lo)}–${fmtOR(hi)}): asociación significativa pero de magnitud débil. Relevancia clínica limitada.`,color:'interp-orange'};
+  if(orMag<3) return{label:'Efecto moderado',cls:'cb-moderate',
+    text:`OR=${fmtOR(or)} (IC: ${fmtOR(lo)}–${fmtOR(hi)}): asociación moderada con potencial relevancia clínica. Interpretar siempre en contexto clínico.`,color:'interp-orange'};
+  return{label:'Efecto fuerte',cls:'cb-strong',
+    text:`OR=${fmtOR(or)} (IC: ${fmtOR(lo)}–${fmtOR(hi)}): asociación fuerte. Verificar consistencia clínica y descartar sesgos antes de interpretar como causal.`,color:'interp-green'};
 }
- 
-function calcular() {
-  const k=getK(), alpha=parseFloat(document.getElementById('alpha').value);
+
+function calcular(){
+  const k=getK(),alpha=parseFloat(document.getElementById('alpha').value);
   const varname=document.getElementById('varname').value||'Variable';
   const pctMode=getPctMode();
   const gNames=getGroupNames();
   let cNames=getCatNames().slice();
- 
   const mRaw=getM();
   const obs=Array.from({length:mRaw},()=>new Array(k).fill(0));
-  const colT=new Array(k).fill(0), rowT=new Array(mRaw).fill(0);
+  const colT=new Array(k).fill(0),rowT=new Array(mRaw).fill(0);
   let isPct=false;
-  const refIdx=varType==='cat'?(parseInt(document.getElementById('ref-group').value)||0):0;
- 
-  if(varType==='binary') {
+
+  if(varType==='binary'){
     isPct=pctMode;
-    for(let j=0;j<k;j++) {
-      const evRaw=document.getElementById('ev'+j).value;
-      const ntRaw=document.getElementById('nt'+j).value;
-      const ev=evRaw===''?0:parseFloat(evRaw);
-      const nt=ntRaw===''?0:parseFloat(ntRaw);
+    for(let j=0;j<k;j++){
+      const ev=document.getElementById('ev'+j).value===''?0:parseFloat(document.getElementById('ev'+j).value);
+      const nt=document.getElementById('nt'+j).value===''?0:parseFloat(document.getElementById('nt'+j).value);
       if(isNaN(ev)||ev<0){alert('n evento inválido en grupo '+(j+1)+'.');return;}
       if(isNaN(nt)||nt<=0){alert('Introduce '+(pctMode?'porcentaje':'N total')+' en grupo '+(j+1)+'.');return;}
       let ntotal;
-      if(pctMode){
-        if(nt<=0||nt>100){alert('Porcentaje inválido en grupo '+(j+1)+'.');return;}
-        ntotal=Math.round(ev/(nt/100));
-        if(!isFinite(ntotal)||ntotal<ev){alert('Porcentaje incompatible con n evento en grupo '+(j+1)+'.');return;}
-      } else {
-        ntotal=nt;
-        if(ntotal<ev){alert('N total debe ser ≥ n evento en grupo '+(j+1)+'.');return;}
-      }
-      obs[0][j]=ev; obs[1][j]=ntotal-ev;
-      colT[j]=ntotal; rowT[0]+=ev; rowT[1]+=(ntotal-ev);
+      if(pctMode){ntotal=Math.round(ev/(nt/100));if(!isFinite(ntotal)||ntotal<ev){alert('Porcentaje incompatible con n evento en grupo '+(j+1)+'.');return;}}
+      else{ntotal=nt;if(ntotal<ev){alert('N total debe ser ≥ n evento en grupo '+(j+1)+'.');return;}}
+      obs[0][j]=ev;obs[1][j]=ntotal-ev;colT[j]=ntotal;rowT[0]+=ev;rowT[1]+=(ntotal-ev);
     }
   } else {
-    for(let i=0;i<mRaw;i++) for(let j=0;j<k;j++) {
+    for(let i=0;i<mRaw;i++) for(let j=0;j<k;j++){
       const raw=document.getElementById('cell'+i+'_'+j).value;
-      const v=raw===''||raw===null?0:parseFloat(raw);
+      const v=raw===''?0:parseFloat(raw);
       if(isNaN(v)||v<0){alert('Valor inválido en categoría '+(i+1)+', grupo '+(j+1)+'.');return;}
-      obs[i][j]=v; colT[j]+=v; rowT[i]+=v;
+      obs[i][j]=v;colT[j]+=v;rowT[i]+=v;
     }
     const validIdx=rowT.map((r,i)=>r>0?i:-1).filter(i=>i>=0);
     if(validIdx.length<2){alert('Necesitas al menos 2 categorías con datos.');return;}
     const obsF=validIdx.map(i=>obs[i].slice());
     const rowTF=validIdx.map(i=>rowT[i]);
-    const cNamesF=validIdx.map(i=>cNames[i]);
-    obs.length=0; obsF.forEach(r=>obs.push(r));
-    rowT.length=0; rowTF.forEach(r=>rowT.push(r));
-    cNames.length=0; cNamesF.forEach(n=>cNames.push(n));
+    const cNF=validIdx.map(i=>cNames[i]);
+    obs.length=0;obsF.forEach(r=>obs.push(r));
+    rowT.length=0;rowTF.forEach(r=>rowT.push(r));
+    cNames.length=0;cNF.forEach(n=>cNames.push(n));
   }
- 
+
   const N=colT.reduce((a,b)=>a+b,0);
-  if(N===0){alert('El total de observaciones es 0.');return;}
+  if(N===0){alert('Total de observaciones es 0.');return;}
   for(let j=0;j<k;j++) if(colT[j]===0){alert('El grupo '+(j+1)+' tiene N=0.');return;}
- 
   const mEff=obs.length;
   const df=(mEff-1)*(k-1);
   if(df===0){alert('df=0: necesitas al menos 2 categorías y 2 grupos.');return;}
- 
+
   const chi2=chi2Stat(obs,rowT,colT,N);
   const minDim=Math.min(mEff-1,k-1);
   const V=Math.sqrt(chi2/(N*minDim));
   const w=V;
   const pvalChi2=1-chiCDF(chi2,df);
- 
   const expMatrix=Array.from({length:mEff},(_,i)=>Array.from({length:k},(_,j)=>rowT[i]*colT[j]/N));
   let cellsBelow5=0;
   for(let i=0;i<mEff;i++) for(let j=0;j<k;j++) if(expMatrix[i][j]<5) cellsBelow5++;
   const totalCells=mEff*k;
   const useFisher=cellsBelow5>0;
- 
   document.getElementById('results').classList.add('hidden');
- 
-  const doRender=(power,mc)=>render(k,mEff,alpha,varname,obs,colT,rowT,N,df,chi2,V,w,pvalChi2,expMatrix,cellsBelow5,totalCells,power,useFisher,mc,isPct,gNames,cNames,refIdx);
- 
-  if(useFisher) {
+
+  const doRender=(power,mc)=>render(k,mEff,alpha,varname,obs,colT,rowT,N,df,chi2,V,w,pvalChi2,expMatrix,cellsBelow5,totalCells,power,useFisher,mc,isPct,gNames,cNames);
+  if(useFisher){
     document.getElementById('loading-msg').classList.remove('hidden');
     setTimeout(()=>{
       const propMatrix=Array.from({length:mEff},(_,i)=>Array.from({length:k},(_,j)=>colT[j]>0?obs[i][j]/colT[j]:0));
       const mc=monteCarloFisher(propMatrix,colT,alpha,10000);
       document.getElementById('loading-msg').classList.add('hidden');
-      doRender(mc.power,mc);
+      if(mc===null){
+        // Exact zeros: analytic fallback
+        const crit=findChiCrit(alpha,df);
+        const power=1-ncChiCDF(crit,df,w*w*N);
+        doRender(power,null);
+      } else {
+        doRender(mc.power,mc);
+      }
     },50);
   } else {
     const crit=findChiCrit(alpha,df);
     doRender(1-ncChiCDF(crit,df,w*w*N),null);
   }
 }
- 
-function render(k,mEff,alpha,varname,obs,colT,rowT,N,df,chi2,V,w,pval,expMatrix,cellsBelow5,totalCells,power,useFisher,mc,isPct,gNames,cNames,refIdx) {
+
+function render(k,mEff,alpha,varname,obs,colT,rowT,N,df,chi2,V,w,pval,expMatrix,cellsBelow5,totalCells,power,useFisher,mc,isPct,gNames,cNames){
   document.getElementById('results').classList.remove('hidden');
- 
+
   document.getElementById('badge-wrap').innerHTML=useFisher
-    ?'<div class="method-badge method-fisher">Método: Fisher exacto por simulación Monte Carlo (10.000 iteraciones)</div>'
+    ?'<div class="method-badge method-fisher">Test: Fisher exacto · Potencia: '+(mc?'simulación Monte Carlo (10.000 iteraciones)':'aproximación analítica (celdas con cero exacto)')+'</div>'
     :'<div class="method-badge method-chi2">Método: Chi-cuadrado analítico (condición de Cochran cumplida)</div>';
- 
   const fi=document.getElementById('fisher-info');
-  if(useFisher){fi.classList.remove('hidden');fi.innerHTML=`${cellsBelow5} celda(s) con frecuencia esperada &lt;5. Potencia calculada por simulación Monte Carlo. IC 95%: <strong>${(mc.ci_low*100).toFixed(1)}%–${(mc.ci_high*100).toFixed(1)}%</strong>.`;}
-  else fi.classList.add('hidden');
- 
+  if(useFisher){
+    fi.classList.remove('hidden');
+    if(mc){
+      fi.innerHTML=`${cellsBelow5} celda(s) con frecuencia esperada &lt;5. Potencia calculada por <strong>simulación Monte Carlo</strong> (10.000 iteraciones). IC 95%: <strong>${(mc.ci_low*100).toFixed(1)}%–${(mc.ci_high*100).toFixed(1)}%</strong>.`;
+    } else {
+      fi.innerHTML=`${cellsBelow5} celda(s) con frecuencia esperada &lt;5 y celdas con cero eventos. Con proporciones observadas de cero, la simulación Monte Carlo no es fiable. Se usa la <strong>aproximación analítica chi-cuadrado no central</strong> como estimación de la potencia. Interpretar con cautela: la potencia real puede diferir.`;
+    }
+  } else { fi.classList.add('hidden'); }
+
+  // Contingency table
   const ctHead=document.getElementById('ct-head');
   const ctBody=document.getElementById('ct-body');
   ctHead.innerHTML='<th></th>'+gNames.map(g=>`<th>${g}</th>`).join('')+'<th style="color:#aaa;">Total</th>';
   ctBody.innerHTML='';
-  for(let i=0;i<mEff;i++) {
+  for(let i=0;i<mEff;i++){
     let r=`<tr><td style="font-weight:500;">${cNames[i]}</td>`;
     for(let j=0;j<k;j++){const pct=colT[j]>0?(obs[i][j]/colT[j]*100).toFixed(1):'—';r+=`<td>${obs[i][j]} (${pct}%)</td>`;}
     r+=`<td style="color:#888;">${rowT[i]}</td></tr>`;
@@ -524,7 +731,8 @@ function render(k,mEff,alpha,varname,obs,colT,rowT,N,df,chi2,V,w,pval,expMatrix,
   }
   ctBody.innerHTML+=`<tr style="font-weight:500;border-top:1px solid #ddd;"><td>Total</td>${colT.map(c=>`<td>${c}</td>`).join('')}<td>${N}</td></tr>`;
   isPct?document.getElementById('pct-note').classList.remove('hidden'):document.getElementById('pct-note').classList.add('hidden');
- 
+
+  // Stats
   document.getElementById('lbl-chi2').textContent=useFisher?'χ² (referencia)':'χ² observado';
   document.getElementById('out-chi2').textContent=chi2.toFixed(3);
   document.getElementById('out-df').textContent=`df=${df} [(${mEff}−1)×(${k}−1)]`;
@@ -535,117 +743,141 @@ function render(k,mEff,alpha,varname,obs,colT,rowT,N,df,chi2,V,w,pval,expMatrix,
   document.getElementById('out-vi').textContent=vI;
   document.getElementById('out-w').textContent=w.toFixed(3);
   document.getElementById('out-wsub').textContent=`√(χ²/N·min(${mEff-1},${k-1}))`;
- 
+
   const powerPct=(power*100).toFixed(1)+'%';
   document.getElementById('out-power').textContent=powerPct;
   document.getElementById('power-bar').style.width=Math.min(power*100,100).toFixed(1)+'%';
-  document.getElementById('lbl-power').textContent=useFisher?'Potencia estimada por Monte Carlo':'Potencia estimada por chi-cuadrado no central';
-  document.getElementById('mc-note').textContent=useFisher?`IC 95%: ${(mc.ci_low*100).toFixed(1)}%–${(mc.ci_high*100).toFixed(1)}% · ${mc.nSim.toLocaleString()} iteraciones`:'';
- 
+  document.getElementById('lbl-power').textContent=useFisher
+    ?(mc?'Potencia estimada por Monte Carlo (Fisher exacto)':'Potencia estimada analíticamente (celdas con cero — ver nota)')
+    :'Potencia estimada (chi-cuadrado no central analítico)';
+  document.getElementById('mc-note').textContent=mc
+    ?`IC 95%: ${(mc.ci_low*100).toFixed(1)}%–${(mc.ci_high*100).toFixed(1)}% · ${mc.nSim.toLocaleString()} iteraciones`
+    :'';
+
   const nNeeded=findNForPower(w,df,alpha,0.80);
-  let barColor,tagClass,tagText,interpStatText;
-  if(power>=0.80){
-    barColor='#2e7d32';tagClass='tag-green';tagText='Adecuada';
-    interpStatText=`<strong>Potencia adecuada (${powerPct}).</strong> El estudio tenía suficiente potencia para detectar el efecto observado (V de Cramér=${V.toFixed(3)}, ${vI.toLowerCase()}, df=${df}). El resultado es estadísticamente fiable y reproducible en muestras similares.`;
-  } else if(power>=0.50){
-    barColor='#e65100';tagClass='tag-orange';tagText='Moderada';
-    interpStatText=`<strong>Potencia moderada (${powerPct}).</strong> Potencia limitada para detectar el efecto (V de Cramér=${V.toFixed(3)}, ${vI.toLowerCase()}). Riesgo de inflación del efecto. Se necesitarían <strong>${nNeeded.toLocaleString()} pacientes</strong> para potencia del 80% (actuales: ${N}).`;
-  } else {
-    barColor='#c62828';tagClass='tag-red';tagText='Baja/Muy baja';
-    interpStatText=`<strong>Potencia insuficiente (${powerPct}).</strong> El estudio NO tenía potencia adecuada. Con V de Cramér=${V.toFixed(3)} (${vI.toLowerCase()}) y N=${N}, la probabilidad de detectar la diferencia real era solo del ${powerPct}. <strong>Los resultados significativos probablemente reflejan inflación estadística.</strong> Se necesitarían <strong>${nNeeded.toLocaleString()} pacientes</strong> (actuales: ${N}).`;
-  }
-  if(useFisher) interpStatText+=` Potencia calculada por Monte Carlo (IC 95%: ${(mc.ci_low*100).toFixed(1)}%–${(mc.ci_high*100).toFixed(1)}%).`;
- 
+  let barColor,tagClass,tagText,interpClass;
+  if(power>=0.80){barColor='#2e7d32';tagClass='tag-green';tagText='Adecuada';interpClass='interp-green';}
+  else if(power>=0.50){barColor='#e65100';tagClass='tag-orange';tagText='Moderada';interpClass='interp-orange';}
+  else{barColor='#c62828';tagClass='tag-red';tagText='Baja/Muy baja';interpClass='interp-red';}
+
+  let interpStatText=power>=0.80
+    ?`<strong>Potencia adecuada (${powerPct}).</strong> Suficiente potencia para detectar el efecto observado (V de Cramér=${V.toFixed(3)}, ${vI.toLowerCase()}, df=${df}). Resultado estadísticamente fiable y reproducible.`
+    :power>=0.50
+    ?`<strong>Potencia moderada (${powerPct}).</strong> Potencia limitada (V de Cramér=${V.toFixed(3)}, ${vI.toLowerCase()}). Riesgo de inflación del efecto. Se necesitarían <strong>${nNeeded.toLocaleString()} pacientes</strong> para potencia del 80% (actuales: ${N}).`
+    :`<strong>Potencia insuficiente (${powerPct}).</strong> Sin potencia adecuada para detectar el efecto en <em>${varname}</em>. Con V=${V.toFixed(3)} y N=${N}, la probabilidad de detectar la diferencia real era solo del ${powerPct}. <strong>Los resultados significativos probablemente reflejan inflación estadística.</strong> Se necesitarían <strong>${nNeeded.toLocaleString()} pacientes</strong> (actuales: ${N}).`;
+  if(useFisher&&mc) interpStatText+=` Monte Carlo IC 95%: ${(mc.ci_low*100).toFixed(1)}%–${(mc.ci_high*100).toFixed(1)}%.`;
+  if(useFisher&&!mc) interpStatText+=` Nota: potencia estimada analíticamente por presencia de ceros exactos (ver nota metodológica).`;
+
   document.getElementById('power-bar').style.background=barColor;
   document.getElementById('tag-power').className='tag '+tagClass;
   document.getElementById('tag-power').textContent=tagText;
   const interpStat=document.getElementById('interp-stat');
-  interpStat.className='interp-box '+(power>=0.80?'interp-green':power>=0.50?'interp-orange':'interp-red');
+  interpStat.className='interp-box '+interpClass;
   interpStat.innerHTML=interpStatText;
- 
-  // OR SECTION
-  const orHead=document.getElementById('or-head');
-  const orBody=document.getElementById('or-body');
-  const interpClin=document.getElementById('interp-clinical');
- 
-  if(varType==='binary') {
-    document.getElementById('or-section-title').textContent='Odds ratios con IC 95% (ref: '+gNames[0]+')';
-    orHead.innerHTML='<th>Comparación</th><th>OR</th><th>IC 95%</th><th>Valoración clínica</th>';
-    orBody.innerHTML='';
-    let clinHTML='';
-    for(let j=1;j<k;j++) {
-      const a=obs[0][j], b=obs[1][j], c=obs[0][0], d=obs[1][0];
-      const {or,lo,hi,hasZero}=calcOR(a,b,c,d);
-      const {strength,strengthClass,clinMsg}=clinicalInterpOR(or,lo,hi,varname,gNames[j],gNames[0],'');
-      const crossesOne=(lo<=1&&hi>=1);
-      const orClass=crossesOne?'or-ns':hasZero?'or-wide':'or-sig';
-      orBody.innerHTML+=`<tr>
+
+  // OR SECTION — reference = one category (row), one subsection per group
+  const orWrap=document.getElementById('or-section-wrap');
+  let orHTML=`<div class="section-title">Odds ratios con IC 95% — referencia: <em>${cNames[0]}</em></div>`;
+  let hasHaldane=false;
+
+  if(varType==='binary'){
+    orHTML+=`<div style="overflow-x:auto;margin-bottom:1rem;"><table>
+      <thead><tr>
+        <th>Comparación</th><th>OR</th><th>IC 95% inferior</th><th>IC 95% superior</th><th>p-valor</th><th>Magnitud</th>
+      </tr></thead><tbody>`;
+    let clinHTML=`<div class="section-title">Interpretación clínica de los OR</div>`;
+    for(let j=1;j<k;j++){
+      const a=obs[0][j],b=obs[1][j],c=obs[0][0],d=obs[1][0];
+      const {or,lo,hi,pval,hasZero}=calcOR(a,b,c,d);
+      if(hasZero)hasHaldane=true;
+      const iOR=interpretOR(or,lo,hi,c,a);
+      const notInterp=iOR.label==='No interpretable';
+      const crossesOne=lo<=1&&hi>=1;
+      const orStyle=notInterp?'color:#c62828':crossesOne?'color:#888':hi/lo>10?'color:#e65100':'color:#1b5e20;font-weight:500';
+      orHTML+=`<tr>
         <td style="font-weight:500;">${gNames[j]} vs ${gNames[0]}</td>
-        <td class="${orClass}">${fmtOR(or)}${hasZero?'*':''}</td>
-        <td>${fmtOR(lo)} – ${fmtOR(hi)}</td>
-        <td><span class="clinical-badge ${strengthClass}">${strength}</span></td>
+        <td style="${orStyle}">${fmtOR(or)}${hasZero?'*':''}</td>
+        <td>${fmtOR(lo)}</td><td>${fmtOR(hi)}</td>
+        <td>${fmtP(pval)}</td>
+        <td><span class="${iOR.cls}">${iOR.label}</span></td>
       </tr>`;
-      clinHTML+=`<div class="interp-box interp-blue" style="margin-bottom:0.5rem;">
-        <strong>${gNames[j]} vs ${gNames[0]}:</strong> ${clinMsg}
+      clinHTML+=`<div class="interp-box ${iOR.color}" style="margin-bottom:0.5rem;">
+        <strong>${gNames[j]} vs ${gNames[0]}:</strong> ${iOR.text}
       </div>`;
     }
-    if(obs[0].some((_,j)=>obs[0][j]===0||obs[1][j]===0)) {
-      orBody.innerHTML+=`<tr><td colspan="4" class="note" style="padding-top:6px;">* OR calculado con corrección de Haldane (suma de 0.5) por presencia de celdas con valor 0.</td></tr>`;
-    }
-    interpClin.innerHTML=clinHTML;
- 
+    if(hasHaldane) orHTML+=`<tr><td colspan="6" class="note" style="padding-top:6px;">* Corrección de Haldane aplicada (suma de 0.5 por celdas con valor 0).</td></tr>`;
+    orHTML+='</tbody></table></div>';
+    orHTML+=clinHTML;
+
   } else {
-    const refJ=Math.min(refIdx, k-1);
-    document.getElementById('or-section-title').textContent=`Odds ratios con IC 95% (ref: ${gNames[refJ]})`;
-    orHead.innerHTML='<th>Categoría</th><th>Grupo</th><th>OR vs ref</th><th>IC 95%</th><th>Valoración clínica</th>';
-    orBody.innerHTML='';
-    let clinHTML='', hasHaldane=false;
-    for(let i=0;i<mEff;i++) {
-      for(let j=0;j<k;j++) {
-        if(j===refJ) continue;
-        const a=obs[i][j], b=colT[j]-obs[i][j];
-        const c=obs[i][refJ], d=colT[refJ]-obs[i][refJ];
-        const {or,lo,hi,hasZero}=calcOR(a,b,c,d);
-        if(hasZero) hasHaldane=true;
-        const {strength,strengthClass,clinMsg}=clinicalInterpOR(or,lo,hi,varname,gNames[j],gNames[refJ],cNames[i]);
-        const crossesOne=(lo<=1&&hi>=1);
-        const orClass=crossesOne?'or-ns':hasZero?'or-wide':'or-sig';
-        orBody.innerHTML+=`<tr>
+    let clinHTML=`<div class="section-title">Interpretación clínica de los OR</div>`;
+    for(let j=0;j<k;j++){
+      orHTML+=`<div class="group-section-title">${gNames[j]}</div>`;
+      orHTML+=`<div style="overflow-x:auto;margin-bottom:1rem;"><table>
+        <thead><tr>
+          <th>Categoría</th><th>vs referencia (${cNames[0]})</th><th>OR</th><th>IC 95% inferior</th><th>IC 95% superior</th><th>p-valor</th><th>Magnitud</th>
+        </tr></thead><tbody>`;
+      orHTML+=`<tr style="background:#f9f9f7;">
+        <td style="font-weight:500;color:#888;">${cNames[0]}</td>
+        <td style="color:#888;font-size:12px;">referencia</td>
+        <td colspan="4" style="color:#888;font-size:12px;">— (referencia) —</td>
+        <td></td>
+      </tr>`;
+      clinHTML+=`<div style="font-size:13px;font-weight:500;color:#3949ab;margin:0.75rem 0 0.4rem;">${gNames[j]}</div>`;
+      const nRef=obs[0][j];
+      for(let i=1;i<mEff;i++){
+        const a=obs[i][j];
+        const b=colT[j]-obs[i][j];
+        const c=obs[0][j];
+        const d=colT[j]-obs[0][j];
+        const {or,lo,hi,pval,hasZero}=calcOR(a,b,c,d);
+        if(hasZero)hasHaldane=true;
+        const iOR=interpretOR(or,lo,hi,nRef,a);
+        const notInterp=iOR.label==='No interpretable';
+        const crossesOne=lo<=1&&hi>=1;
+        const orStyle=notInterp?'color:#c62828':crossesOne?'color:#888':hi/lo>10?'color:#e65100':'color:#1b5e20;font-weight:500';
+        orHTML+=`<tr>
           <td style="font-weight:500;">${cNames[i]}</td>
-          <td>${gNames[j]}</td>
-          <td class="${orClass}">${fmtOR(or)}${hasZero?'*':''}</td>
-          <td>${fmtOR(lo)} – ${fmtOR(hi)}</td>
-          <td><span class="clinical-badge ${strengthClass}">${strength}</span></td>
+          <td style="font-size:12px;color:#666;">vs ${cNames[0]}</td>
+          <td style="${orStyle}">${fmtOR(or)}${hasZero?'*':''}</td>
+          <td>${fmtOR(lo)}</td><td>${fmtOR(hi)}</td>
+          <td>${fmtP(pval)}</td>
+          <td><span class="${iOR.cls}">${iOR.label}</span></td>
         </tr>`;
-        clinHTML+=`<div class="interp-box interp-blue" style="margin-bottom:0.5rem;font-size:13px;">
-          <strong>${cNames[i]} · ${gNames[j]} vs ${gNames[refJ]}:</strong> ${clinMsg}
+        clinHTML+=`<div class="interp-box ${iOR.color}" style="margin-bottom:0.4rem;font-size:13px;">
+          <strong>${cNames[i]} vs ${cNames[0]}:</strong> ${iOR.text}
         </div>`;
       }
+      if(hasHaldane) orHTML+=`<tr><td colspan="7" class="note" style="padding-top:6px;">* Corrección de Haldane aplicada.</td></tr>`;
+      orHTML+='</tbody></table></div>';
     }
-    if(hasHaldane) orBody.innerHTML+=`<tr><td colspan="5" class="note" style="padding-top:6px;">* OR calculado con corrección de Haldane (suma de 0.5) por presencia de celdas con valor 0.</td></tr>`;
-    interpClin.innerHTML=clinHTML;
+    orHTML+=clinHTML;
   }
- 
+
+  orWrap.innerHTML=orHTML;
+
+  // Expected frequencies
   const expHead=document.getElementById('exp-head');
   const expBody=document.getElementById('exp-body');
   expHead.innerHTML='<th></th>'+gNames.map(g=>`<th>${g}</th>`).join('');
   expBody.innerHTML='';
-  for(let i=0;i<mEff;i++) {
+  for(let i=0;i<mEff;i++){
     let r=`<tr><td style="font-weight:500;">${cNames[i]}</td>`;
     for(let j=0;j<k;j++){const exp=expMatrix[i][j];const flag=exp<5?' style="color:#c62828;font-weight:500;"':'';r+=`<td${flag}>${exp.toFixed(2)}${exp<5?' ⚠':''}</td>`;}
-    r+='</tr>'; expBody.innerHTML+=r;
+    r+='</tr>';expBody.innerHTML+=r;
   }
   document.getElementById('cochran-note').textContent=cellsBelow5===0
     ?'Condición de Cochran cumplida: todas las frecuencias esperadas ≥5.'
     :`${cellsBelow5} celda(s) con frecuencia esperada <5 (${(cellsBelow5/totalCells*100).toFixed(0)}% del total). Se ha usado Monte Carlo de Fisher exacto.`;
- 
+
   document.getElementById('out-nneeded').textContent=nNeeded.toLocaleString();
   document.getElementById('out-nneeded-sub').textContent=`α=${alpha}, potencia=80%, w=${w.toFixed(3)}, df=${df}`;
   document.getElementById('out-nactual').textContent=N.toLocaleString();
   document.getElementById('results').scrollIntoView({behavior:'smooth'});
 }
- 
+
 buildDataGrid();
+document.getElementById('data-section-note').textContent='';
 </script>
 </body>
 </html>
